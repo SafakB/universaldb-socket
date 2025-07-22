@@ -154,6 +154,10 @@
                 document.getElementById('messages').innerHTML = '';
             }
 
+            // Önceki 'subscribed' ve 'error' event listener'larını temizle
+            listenSocket.off('subscribed');
+            listenSocket.off('error');
+
             // Sunucuya subscribe isteği gönder
             listenSocket.emit('subscribe', { channel: channel });
 
