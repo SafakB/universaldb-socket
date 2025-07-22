@@ -11,7 +11,7 @@ class ApiController {
                 environment: process.env.NODE_ENV || 'development',
                 uptime: process.uptime()
             };
-            
+
             res.json(status);
         } catch (error) {
             logger.error('Status check failed:', error);
@@ -23,13 +23,12 @@ class ApiController {
         try {
             const eventData = req.body;
             const io = req.app.get('io');
-            
+
             if (!io) {
                 return res.status(500).json({ error: 'Socket.io not available' });
             }
-
             const result = EventService.publishDbChange(io, eventData);
-            
+
             res.json({
                 success: true,
                 message: 'Event published successfully',
@@ -38,9 +37,9 @@ class ApiController {
             });
         } catch (error) {
             logger.error('API publish event failed:', error);
-            res.status(400).json({ 
+            res.status(400).json({
                 error: 'Failed to publish event',
-                details: error.message 
+                details: error.message
             });
         }
     }
@@ -55,7 +54,7 @@ class ApiController {
                 cpu: process.cpuUsage(),
                 timestamp: new Date().toISOString()
             };
-            
+
             res.json(metrics);
         } catch (error) {
             logger.error('Metrics retrieval failed:', error);
