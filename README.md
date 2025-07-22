@@ -312,13 +312,26 @@ npm run lint
 
 MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
+## 📚 Geliştirici Dökümanları
+
+### Yeni Başlayanlar İçin
+- **[Hızlı Başlangıç Rehberi](QUICK_START.md)** - 5 dakikada projeyi çalıştırın
+- **[Geliştirici Rehberi](DEVELOPER_GUIDE.md)** - Kapsamlı geliştirici dökümanı
+- **[API Örnekleri](API_EXAMPLES.md)** - Detaylı kullanım örnekleri ve best practices
+
+### Önemli Dosyalar
+- `emit.html` - Test arayüzü ve örnek kullanım
+- `.env.example` - Ortam değişkenleri şablonu
+- `src/` - Ana kaynak kodları
+
 ## 🆘 Destek
 
 - **Issues:** GitHub Issues sayfasını kullanın
-- **Dokümantasyon:** [Wiki sayfası](wiki-link)
-- **Örnekler:** `examples/` klasörüne bakın
+- **Geliştirici Rehberi:** [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+- **API Örnekleri:** [API_EXAMPLES.md](API_EXAMPLES.md)
+- **Hızlı Başlangıç:** [QUICK_START.md](QUICK_START.md)
 
 ---
 
 **Geliştirici:** Şafak Bahçe
-**Versiyon:** 0.0.1
+**Versiyon:** 1.0.0
