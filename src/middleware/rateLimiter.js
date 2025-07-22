@@ -8,24 +8,23 @@ class RateLimiter {
     }
 
     check(userId, limit = config.rateLimit.maxRequests) {
-        // const now = Date.now();
-        // const windowStart = now - config.rateLimit.windowMs;
+        const now = Date.now();
+        const windowStart = now - config.rateLimit.windowMs;
 
-        // if (!this.clients.has(userId)) {
-        //     this.clients.set(userId, []);
-        // }
+        if (!this.clients.has(userId)) {
+            this.clients.set(userId, []);
+        }
 
-        // const requests = this.clients.get(userId);
-        // const validRequests = requests.filter(time => time > windowStart);
+        const requests = this.clients.get(userId);
+        const validRequests = requests.filter(time => time > windowStart);
 
-        // if (validRequests.length >= limit) {
-        //     logger.warn(`Rate limit exceeded for user: ${userId}`);
-        //     return false;
-        // }
+        if (validRequests.length >= limit) {
+            logger.warn(`Rate limit exceeded for user: ${userId}`);
+            return false;
+        }
 
-        // validRequests.push(now);
-        // this.clients.set(userId, validRequests);
-        // Rate limiting disabled - always return true
+        validRequests.push(now);
+        this.clients.set(userId, validRequests);
         return true;
     }
 

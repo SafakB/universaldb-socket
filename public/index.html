@@ -105,9 +105,9 @@
     <script>
         // Emit için ayrı socket
         // JWT token örneği (gerçek uygulamada sunucudan alınmalı)
-        const JWT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlRlc3QiLCJ0YWJsZXMiOiJwYWdlcyxjYXRlZ29yaWVzIiwiaWF0IjoxNzg0MTM2ODc3LCJleHAiOjE3ODQxNDA0Nzd9.i0f-ndnuS85Ag4V_KE9qbhhySyC7M42VH0DOR2y-h2k';
-        const emitSocket = io('http://localhost:3000', {
-            auth: { token: JWT_TOKEN }
+        const JWT_TOKEN_EMIT = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlRlc3QiLCJ0YWJsZXMiOiIiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNzg0MTM2ODc3LCJleHAiOjE3ODQxNDA0Nzd9.TQ1-vjvGY_I1aA4alsCX-9niEQZChJlf3WTr8-6vEho';
+        const emitSocket = io('http://localhost:3001', {
+            auth: { token: JWT_TOKEN_EMIT }
         });
         document.getElementById('emitForm').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -129,9 +129,9 @@
             emitSocket.emit('dbChange', data);
             document.getElementById('result').textContent = 'Emit gönderildi!';
         });
-
+        const JWT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlRlc3QiLCJ0YWJsZXMiOiJwYWdlcyxjYXRlZ29yaWVzLHVzZXJzIiwiaWF0IjoxNzg0MTM2ODc3LCJleHAiOjE3ODQxNDA0Nzd9.CemdXHMEGgA6BBqlcMmIYJISA9x-1so9oOPjwEWUJBM';
         // Dinleme için ayrı socket
-        const listenSocket = io('http://localhost:3000', {
+        const listenSocket = io('http://localhost:3001', {
             auth: { token: JWT_TOKEN }
         });
         let currentChannel = null;
@@ -153,17 +153,17 @@
                 });
                 document.getElementById('messages').innerHTML = '';
             }
-            
+
             // Sunucuya subscribe isteği gönder
             listenSocket.emit('subscribe', { channel: channel });
-            
+
             // Subscribe başarılı olduğunda
-            listenSocket.on('subscribed', function(data) {
+            listenSocket.on('subscribed', function (data) {
                 if (data.channel === channel) {
                     const authorizedChannels = data.authorizedChannels || [channel];
                     document.getElementById('listenResult').textContent = `Dinleniyor: ${authorizedChannels.join(', ')}`;
                     document.getElementById('listenResult').className = 'alert alert-success';
-                    
+
                     // Her yetkili kanala listener ekle
                     authorizedChannels.forEach(ch => {
                         listenSocket.on(ch, function (eventData) {
@@ -180,14 +180,14 @@
                             messages.insertBefore(li, messages.firstChild);
                         });
                     });
-                    
+
                     currentChannel = channel;
                     currentAuthorizedChannels = authorizedChannels;
                 }
             });
-            
+
             // Hata durumunda
-            listenSocket.on('error', function(error) {
+            listenSocket.on('error', function (error) {
                 document.getElementById('listenResult').textContent = `Hata: ${error.message}`;
                 document.getElementById('listenResult').className = 'alert alert-danger';
             });

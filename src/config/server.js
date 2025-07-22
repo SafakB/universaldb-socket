@@ -13,7 +13,7 @@ module.exports = {
         pingInterval: 25000
     },
     rateLimit: {
-        windowMs: 60 * 1000, // 1 minute
-        maxRequests: 100
+        windowMs: process.env.RATE_LIMIT_WINDOW_MS || 60000,
+        maxRequests: process.env.RATE_LIMIT_MAX_REQUESTS || 100
     }
 };
