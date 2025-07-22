@@ -1,24 +1,24 @@
-# 📡 API Örnekleri ve Kullanım Senaryoları
+# 📡 API Examples and Usage Scenarios
 
-## 📋 İçindekiler
+## 📋 Table of Contents
 
-1. [Temel Bağlantı](#temel-bağlantı)
-2. [Kanal Abonelikleri](#kanal-abonelikleri)
-3. [Event Gönderme](#event-gönderme)
-4. [Hata Yönetimi](#hata-yönetimi)
-5. [İleri Seviye Kullanım](#ileri-seviye-kullanım)
-6. [Platform Örnekleri](#platform-örnekleri)
+1. [Basic Connection](#basic-connection)
+2. [Channel Subscriptions](#channel-subscriptions)
+3. [Event Sending](#event-sending)
+4. [Error Management](#error-management)
+5. [Advanced Usage](#advanced-usage)
+6. [Platform Examples](#platform-examples)
 7. [Best Practices](#best-practices)
 
 ---
 
-## 🔌 Temel Bağlantı
+## 🔌 Basic Connection
 
-### Node.js İstemci
+### Node.js Client
 ```javascript
 const io = require('socket.io-client');
 
-// Temel bağlantı
+// Basic connection
 const socket = io('http://localhost:3000', {
     auth: {
         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
@@ -28,21 +28,21 @@ const socket = io('http://localhost:3000', {
     forceNew: true
 });
 
-// Bağlantı event'leri
+// Connection events
 socket.on('connect', () => {
-    console.log('✅ Sunucuya bağlandı:', socket.id);
+    console.log('✅ Connected to server:', socket.id);
 });
 
 socket.on('disconnect', (reason) => {
-    console.log('❌ Bağlantı kesildi:', reason);
+    console.log('❌ Connection lost:', reason);
 });
 
 socket.on('connect_error', (error) => {
-    console.error('🚫 Bağlantı hatası:', error.message);
+    console.error('🚫 Connection error:', error.message);
 });
 ```
 
-### Browser İstemci
+### Browser Client
 ```html
 <!DOCTYPE html>
 <html>
@@ -58,76 +58,76 @@ socket.on('connect_error', (error) => {
         });
         
         socket.on('connect', () => {
-            console.log('Bağlantı kuruldu');
+            console.log('Connection established');
         });
     </script>
 </body>
 </html>
 ```
 
-### Python İstemci
+### Python Client
 ```python
 import socketio
 import json
 
-# Socket.io client oluştur
+# Create Socket.io client
 sio = socketio.Client()
 
-# Bağlantı event'leri
+# Connection events
 @sio.event
 def connect():
-    print('Sunucuya bağlandı')
+    print('Connected to server')
     
 @sio.event
 def disconnect():
-    print('Bağlantı kesildi')
+    print('Connection lost')
 
-# JWT token ile bağlan
+# Connect with JWT token
 sio.connect('http://localhost:3000', 
            auth={'token': 'your-jwt-token'})
 ```
 
 ---
 
-## 📺 Kanal Abonelikleri
+## 📺 Channel Subscriptions
 
-### Basit Kanal Dinleme
+### Simple Channel Listening
 ```javascript
-// Tüm veritabanı değişikliklerini dinle
+// Listen to all database changes
 socket.emit('subscribe', 'db');
 socket.on('db', (data) => {
-    console.log('DB değişikliği:', data);
+    console.log('DB change:', data);
 });
 
-// Belirli tablo dinleme
+// Listen to specific table
 socket.emit('subscribe', 'db.users');
 socket.on('db.users', (data) => {
-    console.log('Users tablosu değişti:', data);
+    console.log('Users table changed:', data);
 });
 
-// Belirli işlem dinleme
+// Listen to specific operation
 socket.emit('subscribe', 'db.products.insert');
 socket.on('db.products.insert', (data) => {
-    console.log('Yeni ürün eklendi:', data.record);
+    console.log('New product added:', data.record);
 });
 ```
 
-### Wildcard Kullanımı
+### Wildcard Usage
 ```javascript
-// Tüm tablolarda insert işlemlerini dinle
+// Listen to insert operations on all tables
 socket.emit('subscribe', 'db.*.insert');
 socket.on('db.*.insert', (data) => {
-    console.log(`${data.table} tablosuna yeni kayıt:`, data.record);
+    console.log(`New record in ${data.table} table:`, data.record);
 });
 
-// Belirli kaydın tüm değişikliklerini dinle
+// Listen to all changes for specific record
 socket.emit('subscribe', 'db.users.*.123');
 socket.on('db.users.*.123', (data) => {
-    console.log('Kullanıcı 123 güncellendi:', data);
+    console.log('User 123 updated:', data);
 });
 ```
 
-### Çoklu Kanal Aboneliği
+### Multiple Channel Subscription
 ```javascript
 const channels = [
     'db.users.insert',
@@ -149,7 +149,7 @@ function handleEvent(channel, data) {
 }
 ```
 
-### Dinamik Abonelik Yönetimi
+### Dynamic Subscription Management
 ```javascript
 class ChannelManager {
     constructor(socket) {
@@ -162,7 +162,7 @@ class ChannelManager {
             this.socket.emit('subscribe', channel);
             this.socket.on(channel, handler);
             this.subscriptions.add(channel);
-            console.log(`✅ Abone olundu: ${channel}`);
+            console.log(`✅ Subscribed to: ${channel}`);
         }
     }
     
@@ -171,7 +171,7 @@ class ChannelManager {
             this.socket.emit('unsubscribe', channel);
             this.socket.off(channel);
             this.subscriptions.delete(channel);
-            console.log(`❌ Abonelik iptal edildi: ${channel}`);
+            console.log(`❌ Unsubscribed from: ${channel}`);
         }
     }
     
@@ -182,7 +182,7 @@ class ChannelManager {
     }
 }
 
-// Kullanım
+// Usage
 const channelManager = new ChannelManager(socket);
 channelManager.subscribe('db.users', (data) => {
     console.log('User event:', data);
@@ -191,25 +191,25 @@ channelManager.subscribe('db.users', (data) => {
 
 ---
 
-## 📤 Event Gönderme
+## 📤 Event Sending
 
-### Harici Sistemlerden Admin JWT ile Event Gönderme
+### Sending Events from External Systems with Admin JWT
 
-#### CodeIgniter Örneği
+#### CodeIgniter Example
 ```php
 <?php
-// JWT token oluşturma (admin yetkili)
+// JWT token creation (admin privileges)
 $payload = [
     'sub' => 'codeigniter_system',
     'name' => 'CodeIgniter App',
     'admin' => true,
     'iat' => time(),
-    'exp' => time() + 3600 // 1 saat
+    'exp' => time() + 3600 // 1 hour
 ];
 
 $jwt = JWT::encode($payload, $secret_key, 'HS256');
 
-// Socket.io bağlantısı ve event gönderme
+// Socket.io connection and event sending
 $client = new SocketIOClient('http://localhost:3001', [
     'auth' => ['token' => $jwt]
 ]);
@@ -223,13 +223,13 @@ $client->emit('dbChange', [
 ?>
 ```
 
-#### Laravel Örneği
+#### Laravel Example
 ```php
 <?php
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-// Admin JWT oluşturma
+// Admin JWT creation
 $payload = [
     'sub' => 'laravel_api',
     'name' => 'Laravel Application',
@@ -240,7 +240,7 @@ $payload = [
 
 $jwt = JWT::encode($payload, config('app.jwt_secret'), 'HS256');
 
-// HTTP POST ile event gönderme
+// Event sending via HTTP POST
 $response = Http::withHeaders([
     'Authorization' => 'Bearer ' . $jwt,
     'Content-Type' => 'application/json'
@@ -253,12 +253,12 @@ $response = Http::withHeaders([
 ?>
 ```
 
-#### Node.js Mikroservis Örneği
+#### Node.js Microservice Example
 ```javascript
 const jwt = require('jsonwebtoken');
 const io = require('socket.io-client');
 
-// Admin JWT oluşturma
+// Admin JWT creation
 const adminToken = jwt.sign({
     sub: 'microservice_orders',
     name: 'Orders Microservice',
@@ -267,15 +267,15 @@ const adminToken = jwt.sign({
     exp: Math.floor(Date.now() / 1000) + 3600
 }, process.env.JWT_SECRET);
 
-// Socket bağlantısı
+// Socket connection
 const socket = io('http://localhost:3001', {
     auth: { token: adminToken }
 });
 
 socket.on('connect', () => {
-    console.log('Mikroservis bağlandı');
+    console.log('Microservice connected');
     
-    // DB değişiklik eventi gönder
+    // Send DB change event
     socket.emit('dbChange', {
         timestamp: new Date().toISOString(),
         table: 'orders',
@@ -290,9 +290,9 @@ socket.on('connect', () => {
 });
 ```
 
-### Basit Event Gönderme
+### Simple Event Sending
 ```javascript
-// Yeni kullanıcı ekleme eventi
+// New user addition event
 socket.emit('dbChange', {
     timestamp: new Date().toISOString(),
     table: 'users',
@@ -305,7 +305,7 @@ socket.emit('dbChange', {
     }
 });
 
-// Kullanıcı güncelleme eventi
+// User update event
 socket.emit('dbChange', {
     timestamp: new Date().toISOString(),
     table: 'users',
@@ -318,7 +318,7 @@ socket.emit('dbChange', {
     }
 });
 
-// Kullanıcı silme eventi
+// User deletion event
 socket.emit('dbChange', {
     timestamp: new Date().toISOString(),
     table: 'users',
@@ -363,7 +363,7 @@ class EventBuilder {
     }
 }
 
-// Kullanım
+// Usage
 new EventBuilder()
     .table('products')
     .action('insert')
@@ -376,7 +376,7 @@ new EventBuilder()
     .emit(socket);
 ```
 
-### Batch Event Gönderme
+### Batch Event Sending
 ```javascript
 class BatchEventSender {
     constructor(socket, batchSize = 10, interval = 1000) {
@@ -415,10 +415,10 @@ class BatchEventSender {
     }
 }
 
-// Kullanım
+// Usage
 const batchSender = new BatchEventSender(socket);
 
-// Çoklu event ekleme
+// Adding multiple events
 for (let i = 0; i < 100; i++) {
     batchSender.addEvent({
         table: 'logs',
@@ -430,9 +430,9 @@ for (let i = 0; i < 100; i++) {
 
 ---
 
-## ⚠️ Hata Yönetimi
+## ⚠️ Error Management
 
-### Kapsamlı Hata Yakalama
+### Comprehensive Error Handling
 ```javascript
 class SocketErrorHandler {
     constructor(socket) {
@@ -441,22 +441,22 @@ class SocketErrorHandler {
     }
     
     setupErrorHandlers() {
-        // Genel hata yakalama
+        // General error handling
         this.socket.on('error', (error) => {
-            console.error('Socket hatası:', error);
+            console.error('Socket error:', error);
             this.handleError('SOCKET_ERROR', error);
         });
         
-        // Bağlantı hataları
+        // Connection errors
         this.socket.on('connect_error', (error) => {
-            console.error('Bağlantı hatası:', error);
+            console.error('Connection error:', error);
             this.handleError('CONNECTION_ERROR', error);
         });
         
-        // Kimlik doğrulama hataları
+        // Authentication errors
         this.socket.on('disconnect', (reason) => {
             if (reason === 'io server disconnect') {
-                console.error('Sunucu tarafından bağlantı kesildi');
+                console.error('Connection terminated by server');
                 this.handleError('SERVER_DISCONNECT', reason);
             }
         });
@@ -474,28 +474,28 @@ class SocketErrorHandler {
                 this.handleServerDisconnect();
                 break;
             default:
-                console.log('Bilinmeyen hata türü:', type);
+                console.log('Unknown error type:', type);
         }
     }
     
     retryConnection() {
         setTimeout(() => {
             if (!this.socket.connected) {
-                console.log('Yeniden bağlanmaya çalışılıyor...');
+                console.log('Attempting to reconnect...');
                 this.socket.connect();
             }
         }, 5000);
     }
     
     scheduleReconnect() {
-        // Exponential backoff ile yeniden bağlanma
+        // Reconnection with exponential backoff
         let retryCount = 0;
         const maxRetries = 5;
         
         const reconnect = () => {
             if (retryCount < maxRetries && !this.socket.connected) {
                 const delay = Math.pow(2, retryCount) * 1000;
-                console.log(`${delay}ms sonra yeniden bağlanılacak (${retryCount + 1}/${maxRetries})`);
+                console.log(`Reconnecting in ${delay}ms (${retryCount + 1}/${maxRetries})`);
                 
                 setTimeout(() => {
                     this.socket.connect();
@@ -509,12 +509,12 @@ class SocketErrorHandler {
     }
     
     handleServerDisconnect() {
-        // Token yenileme veya kullanıcıyı login sayfasına yönlendirme
-        console.log('Token yenilenmesi gerekebilir');
+        // Token refresh or redirect user to login page
+        console.log('Token refresh may be required');
     }
 }
 
-// Kullanım
+// Usage
 const errorHandler = new SocketErrorHandler(socket);
 ```
 
@@ -524,25 +524,25 @@ class EventValidator {
     static validate(event) {
         const errors = [];
         
-        // Zorunlu alanlar
-        if (!event.timestamp) errors.push('timestamp gerekli');
-        if (!event.table) errors.push('table gerekli');
-        if (!event.action) errors.push('action gerekli');
+        // Required fields
+        if (!event.timestamp) errors.push('timestamp is required');
+        if (!event.table) errors.push('table is required');
+        if (!event.action) errors.push('action is required');
         
         // Action validation
         const validActions = ['insert', 'update', 'delete'];
         if (event.action && !validActions.includes(event.action)) {
-            errors.push('action insert, update veya delete olmalı');
+            errors.push('action must be insert, update or delete');
         }
         
         // Timestamp validation
         if (event.timestamp && isNaN(Date.parse(event.timestamp))) {
-            errors.push('timestamp geçerli bir ISO 8601 tarihi olmalı');
+            errors.push('timestamp must be a valid ISO 8601 date');
         }
         
         // Record validation
         if (event.record && typeof event.record !== 'object') {
-            errors.push('record bir object olmalı');
+            errors.push('record must be an object');
         }
         
         return {
@@ -552,12 +552,12 @@ class EventValidator {
     }
 }
 
-// Kullanım
+// Usage
 function sendEvent(socket, event) {
     const validation = EventValidator.validate(event);
     
     if (!validation.isValid) {
-        console.error('Event validation hatası:', validation.errors);
+        console.error('Event validation error:', validation.errors);
         return false;
     }
     
@@ -568,9 +568,9 @@ function sendEvent(socket, event) {
 
 ---
 
-## 🚀 İleri Seviye Kullanım
+## 🚀 Advanced Usage
 
-### Connection Pool Yönetimi
+### Connection Pool Management
 ```javascript
 class SocketPool {
     constructor(url, options = {}) {
@@ -583,7 +583,7 @@ class SocketPool {
     getConnection(userId) {
         if (!this.pools.has(userId)) {
             if (this.pools.size >= this.maxConnections) {
-                // En eski bağlantıyı kapat
+                // Close oldest connection
                 const oldestUser = this.pools.keys().next().value;
                 this.closeConnection(oldestUser);
             }
@@ -614,7 +614,7 @@ class SocketPool {
     
     cleanup() {
         const now = Date.now();
-        const timeout = 30 * 60 * 1000; // 30 dakika
+        const timeout = 30 * 60 * 1000; // 30 minutes
         
         for (const [userId, connection] of this.pools) {
             if (now - connection.lastUsed > timeout) {
@@ -624,20 +624,20 @@ class SocketPool {
     }
     
     getTokenForUser(userId) {
-        // Token alma mantığı
+        // Token retrieval logic
         return localStorage.getItem(`token_${userId}`);
     }
 }
 
-// Kullanım
+// Usage
 const socketPool = new SocketPool('http://localhost:3000');
 const userSocket = socketPool.getConnection('user123');
 
-// Periyodik temizlik
+// Periodic cleanup
 setInterval(() => socketPool.cleanup(), 5 * 60 * 1000);
 ```
 
-### Event Filtering ve Transformation
+### Event Filtering and Transformation
 ```javascript
 class EventProcessor {
     constructor(socket) {
@@ -659,7 +659,7 @@ class EventProcessor {
     subscribe(channel, handler) {
         this.socket.emit('subscribe', channel);
         this.socket.on(channel, (data) => {
-            // Filtreleme
+            // Filtering
             const shouldProcess = this.filters.every(filter => filter(data));
             if (!shouldProcess) return;
             
@@ -674,15 +674,15 @@ class EventProcessor {
     }
 }
 
-// Kullanım
+// Usage
 const processor = new EventProcessor(socket);
 
-// Sadece belirli kullanıcıların eventlerini filtrele
+// Filter events for specific users only
 processor.addFilter(data => {
     return data.record && data.record.user_id === currentUserId;
 });
 
-// Timestamp'i yerel zamana çevir
+// Convert timestamp to local time
 processor.addTransformer(data => {
     return {
         ...data,
@@ -695,7 +695,7 @@ processor.subscribe('db.orders', (data) => {
 });
 ```
 
-### Metrics ve Monitoring
+### Metrics and Monitoring
 ```javascript
 class SocketMetrics {
     constructor(socket) {
@@ -712,13 +712,13 @@ class SocketMetrics {
     }
     
     setupMetrics() {
-        // Bağlantı zamanını kaydet
+        // Record connection time
         this.socket.on('connect', () => {
             this.metrics.connectionTime = Date.now();
             this.metrics.lastActivity = Date.now();
         });
         
-        // Gelen eventleri say
+        // Count incoming events
         const originalOn = this.socket.on.bind(this.socket);
         this.socket.on = (event, handler) => {
             return originalOn(event, (...args) => {
@@ -730,7 +730,7 @@ class SocketMetrics {
             });
         };
         
-        // Giden eventleri say
+        // Count outgoing events
         const originalEmit = this.socket.emit.bind(this.socket);
         this.socket.emit = (event, ...args) => {
             if (event === 'dbChange') {
@@ -740,7 +740,7 @@ class SocketMetrics {
             return originalEmit(event, ...args);
         };
         
-        // Hataları say
+        // Count errors
         this.socket.on('error', () => {
             this.metrics.errors++;
         });
@@ -767,10 +767,10 @@ class SocketMetrics {
     }
 }
 
-// Kullanım
+// Usage
 const metrics = new SocketMetrics(socket);
 
-// Periyodik rapor
+// Periodic reporting
 setInterval(() => {
     console.log('Socket Metrics:', metrics.getMetrics());
 }, 30000);
@@ -778,7 +778,7 @@ setInterval(() => {
 
 ---
 
-## 🌐 Platform Örnekleri
+## 🌐 Platform Examples
 
 ### React Hook
 ```jsx
@@ -833,7 +833,7 @@ export function useSocket(url, token) {
     return { socket, connected, error, subscribe, emit };
 }
 
-// Kullanım
+// Usage
 function UserComponent() {
     const { subscribe, emit, connected } = useSocket(
         'http://localhost:3000',
@@ -1000,9 +1000,9 @@ export class SocketService {
 
 ## ✅ Best Practices
 
-### 1. Bağlantı Yönetimi
+### 1. Connection Management
 ```javascript
-// ✅ İyi
+// ✅ Good
 class ConnectionManager {
     constructor(url, token) {
         this.url = url;
@@ -1027,12 +1027,12 @@ class ConnectionManager {
     setupEventHandlers() {
         this.socket.on('connect', () => {
             this.reconnectAttempts = 0;
-            console.log('Bağlantı kuruldu');
+            console.log('Connection established');
         });
         
         this.socket.on('disconnect', (reason) => {
             if (reason === 'io server disconnect') {
-                // Sunucu bağlantıyı kesti, yeniden bağlanma
+                // Server disconnected, reconnect
                 this.reconnect();
             }
         });
@@ -1048,13 +1048,13 @@ class ConnectionManager {
     }
 }
 
-// ❌ Kötü
-const socket = io('http://localhost:3000'); // Token yok, hata yönetimi yok
+// ❌ Bad
+const socket = io('http://localhost:3000'); // No token, no error handling
 ```
 
 ### 2. Event Handling
 ```javascript
-// ✅ İyi
+// ✅ Good
 class EventHandler {
     constructor(socket) {
         this.socket = socket;
@@ -1062,7 +1062,7 @@ class EventHandler {
     }
     
     on(channel, handler) {
-        // Duplicate handler kontrolü
+        // Duplicate handler check
         if (this.handlers.has(channel)) {
             this.socket.off(channel, this.handlers.get(channel));
         }
@@ -1086,52 +1086,52 @@ class EventHandler {
     }
 }
 
-// ❌ Kötü
+// ❌ Bad
 socket.on('db.users', handler1);
 socket.on('db.users', handler2); // Duplicate handler
-// Cleanup yok
+// No cleanup
 ```
 
 ### 3. Error Handling
 ```javascript
-// ✅ İyi
+// ✅ Good
 function safeEmit(socket, event, data) {
     try {
         if (!socket.connected) {
-            throw new Error('Socket bağlı değil');
+            throw new Error('Socket not connected');
         }
         
         const validation = validateEventData(data);
         if (!validation.isValid) {
-            throw new Error(`Validation hatası: ${validation.errors.join(', ')}`);
+            throw new Error(`Validation error: ${validation.errors.join(', ')}`);
         }
         
         socket.emit(event, data);
         return { success: true };
     } catch (error) {
-        console.error('Event gönderme hatası:', error);
+        console.error('Event sending error:', error);
         return { success: false, error: error.message };
     }
 }
 
-// ❌ Kötü
-socket.emit('dbChange', data); // Hata kontrolü yok
+// ❌ Bad
+socket.emit('dbChange', data); // No error checking
 ```
 
 ### 4. Memory Management
 ```javascript
-// ✅ İyi
+// ✅ Good
 class SocketManager {
     constructor() {
         this.sockets = new Map();
         this.cleanup = this.cleanup.bind(this);
         
-        // Sayfa kapatılırken temizlik
+        // Cleanup when page closes
         window.addEventListener('beforeunload', this.cleanup);
     }
     
     addSocket(id, socket) {
-        // Eski socket'i temizle
+        // Clean up old socket
         if (this.sockets.has(id)) {
             this.removeSocket(id);
         }
@@ -1155,15 +1155,15 @@ class SocketManager {
     }
 }
 
-// ❌ Kötü
-const sockets = []; // Memory leak riski
+// ❌ Bad
+const sockets = []; // Memory leak risk
 sockets.push(io('http://localhost:3000'));
-// Temizlik yok
+// No cleanup
 ```
 
 ### 5. Performance Optimization
 ```javascript
-// ✅ İyi - Throttling
+// ✅ Good - Throttling
 function createThrottledEmitter(socket, delay = 100) {
     let lastEmit = 0;
     let pending = null;
@@ -1185,12 +1185,12 @@ function createThrottledEmitter(socket, delay = 100) {
     };
 }
 
-// ❌ Kötü - Çok sık emit
+// ❌ Bad - Too frequent emit
 setInterval(() => {
-    socket.emit('dbChange', data); // Her 10ms'de bir
+    socket.emit('dbChange', data); // Every 10ms
 }, 10);
 ```
 
 ---
 
-**Bu API referansı projenin tüm özelliklerini kapsamlı olarak göstermektedir. Gerçek projelerinizde bu örnekleri temel alarak kendi ihtiyaçlarınıza göre uyarlayabilirsiniz.**
+**This API reference comprehensively demonstrates all features of the project. You can adapt these examples to your own needs in your real projects.**

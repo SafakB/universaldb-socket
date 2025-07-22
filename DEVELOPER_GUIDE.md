@@ -1,35 +1,35 @@
-# MySQL Socket Event Server - Geliştirici Rehberi
+# MySQL Socket Event Server - Developer Guide
 
-## 📋 İçindekiler
+## 📋 Table of Contents
 
-1. [Proje Genel Bakış](#proje-genel-bakış)
-2. [Mimari ve Tasarım](#mimari-ve-tasarım)
-3. [Kurulum ve Yapılandırma](#kurulum-ve-yapılandırma)
-4. [Proje Yapısı](#proje-yapısı)
-5. [Temel Bileşenler](#temel-bileşenler)
-6. [API Referansı](#api-referansı)
-7. [Güvenlik](#güvenlik)
-8. [Geliştirme Süreci](#geliştirme-süreci)
-9. [Test ve Debug](#test-ve-debug)
+1. [Project Overview](#project-overview)
+2. [Architecture and Design](#architecture-and-design)
+3. [Installation and Configuration](#installation-and-configuration)
+4. [Project Structure](#project-structure)
+5. [Core Components](#core-components)
+6. [API Reference](#api-reference)
+7. [Security](#security)
+8. [Development Process](#development-process)
+9. [Testing and Debug](#testing-and-debug)
 10. [Deployment](#deployment)
-11. [Sorun Giderme](#sorun-giderme)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
-## 🎯 Proje Genel Bakış
+## 🎯 Project Overview
 
-### Ne Yapar?
-MySQL Socket Event Server, veritabanı değişikliklerini (insert, update, delete) gerçek zamanlı olarak WebSocket bağlantıları üzerinden istemcilere ileten bir Node.js uygulamasıdır.
+### What It Does
+MySQL Socket Event Server is a Node.js application that delivers database changes (insert, update, delete) to clients in real-time via WebSocket connections.
 
-### Temel Özellikler
-- **Real-time Event Broadcasting**: Veritabanı değişiklikleri anında iletilir
-- **JWT Authentication**: Token tabanlı güvenli kimlik doğrulama
-- **Hierarchical Channel System**: Esnek kanal yapısı ile hedefli dinleme
-- **Table-based Authorization**: Kullanıcılar sadece yetkili oldukları tabloları dinleyebilir
-- **Rate Limiting**: DDoS koruması ve kaynak yönetimi
-- **Modern Web UI**: Test ve geliştirme için hazır arayüz
+### Core Features
+- **Real-time Event Broadcasting**: Database changes are delivered instantly
+- **JWT Authentication**: Token-based secure authentication
+- **Hierarchical Channel System**: Flexible channel structure for targeted listening
+- **Table-based Authorization**: Users can only listen to tables they are authorized for
+- **Rate Limiting**: DDoS protection and resource management
+- **Modern Web UI**: Ready-to-use interface for testing and development
 
-### Teknoloji Stack
+### Technology Stack
 - **Backend**: Node.js, Express.js
 - **WebSocket**: Socket.io
 - **Authentication**: JSON Web Tokens (JWT)
@@ -37,9 +37,9 @@ MySQL Socket Event Server, veritabanı değişikliklerini (insert, update, delet
 
 ---
 
-## 🏗️ Mimari ve Tasarım
+## 🏗️ Architecture and Design
 
-### Sistem Mimarisi
+### System Architecture
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -64,7 +64,7 @@ MySQL Socket Event Server, veritabanı değişikliklerini (insert, update, delet
                     └───────────────────────────┘
 ```
 
-### Kanal Hiyerarşisi
+### Channel Hierarchy
 
 ```
 db (root)
@@ -80,51 +80,51 @@ db (root)
 └── db.*.insert (wildcard)
 ```
 
-### Veri Akışı
+### Data Flow
 
-1. **Event Generation**: Uygulama veritabanı değişikliği tespit eder
-2. **Event Publishing**: `dbChange` eventi Socket.io'ya gönderilir
-3. **Channel Resolution**: Event, hiyerarşik kanallara dağıtılır
-4. **Authorization Check**: Kullanıcı yetkileri kontrol edilir
-5. **Event Delivery**: Yetkili istemcilere event iletilir
+1. **Event Generation**: Application detects database change
+2. **Event Publishing**: `dbChange` event is sent to Socket.io
+3. **Channel Resolution**: Event is distributed to hierarchical channels
+4. **Authorization Check**: User permissions are checked
+5. **Event Delivery**: Event is delivered to authorized clients
 
 ---
 
-## ⚙️ Kurulum ve Yapılandırma
+## ⚙️ Installation and Configuration
 
-### Sistem Gereksinimleri
-- Node.js v16+ (önerilen v18+)
-- npm v8+ veya yarn v1.22+
+### System Requirements
+- Node.js v16+ (recommended v18+)
+- npm v8+ or yarn v1.22+
 - 512MB+ RAM
-- 100MB+ disk alanı
+- 100MB+ disk space
 
-### Adım Adım Kurulum
+### Step-by-Step Installation
 
-#### 1. Projeyi İndirin
+#### 1. Download Project
 ```bash
 git clone <repository-url>
 cd mysql-socket
 ```
 
-#### 2. Bağımlılıkları Yükleyin
+#### 2. Install Dependencies
 ```bash
 npm install
-# veya
+# or
 yarn install
 ```
 
-#### 3. Ortam Değişkenlerini Yapılandırın
+#### 3. Configure Environment Variables
 ```bash
 cp .env.example .env
 ```
 
-`.env` dosyasını düzenleyin:
+Edit `.env` file:
 ```env
 # Server Configuration
 PORT=3000
 NODE_ENV=development
 
-# JWT Configuration (ÖNEMLİ: Production'da değiştirin!)
+# JWT Configuration (IMPORTANT: Change in production!)
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_EXPIRES_IN=24h
 
@@ -136,62 +136,62 @@ RATE_LIMIT_MAX_REQUESTS=100
 CORS_ORIGIN=http://localhost:3000
 ```
 
-#### 4. Sunucuyu Başlatın
+#### 4. Start Server
 ```bash
-# Geliştirme modu (auto-reload)
+# Development mode (auto-reload)
 npm run dev
 
-# Production modu
+# Production mode
 npm start
 ```
 
-#### 5. Test Edin
-- Tarayıcıda `http://localhost:3000` adresini açın
-- `emit.html` dosyasını kullanarak test edin
+#### 5. Test
+- Open `http://localhost:3000` in browser
+- Use `emit.html` file for testing
 
 ---
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
 ```
 mysql-socket/
-├── src/                          # Ana kaynak kodları
-│   ├── app.js                    # Ana uygulama sınıfı
-│   ├── config/                   # Yapılandırma dosyaları
-│   │   ├── server.js             # Sunucu ayarları
-│   │   └── jwt.js                # JWT yapılandırması
-│   ├── controllers/              # İş mantığı kontrolcüleri
+├── src/                          # Main source code
+│   ├── app.js                    # Main application class
+│   ├── config/                   # Configuration files
+│   │   ├── server.js             # Server settings
+│   │   └── jwt.js                # JWT configuration
+│   ├── controllers/              # Business logic controllers
 │   │   ├── socketController.js   # Socket.io event handlers
 │   │   └── apiController.js      # REST API handlers
-│   ├── middleware/               # Ara katman yazılımları
-│   │   ├── auth.js               # Kimlik doğrulama
-│   │   ├── rateLimiter.js        # Hız sınırlama
-│   │   └── errorHandler.js       # Hata yönetimi
-│   ├── services/                 # İş mantığı servisleri
-│   │   ├── eventService.js       # Event yayınlama
-│   │   └── socketService.js      # Socket yönetimi
-│   ├── utils/                    # Yardımcı araçlar
-│   │   ├── logger.js             # Loglama
-│   │   └── validator.js          # Veri doğrulama
-│   └── routes/                   # API rotaları
+│   ├── middleware/               # Middleware
+│   │   ├── auth.js               # Authentication
+│   │   ├── rateLimiter.js        # Rate limiting
+│   │   └── errorHandler.js       # Error handling
+│   ├── services/                 # Business logic services
+│   │   ├── eventService.js       # Event publishing
+│   │   └── socketService.js      # Socket management
+│   ├── utils/                    # Utility tools
+│   │   ├── logger.js             # Logging
+│   │   └── validator.js          # Data validation
+│   └── routes/                   # API routes
 │       └── api.js                # REST endpoints
-├── public/                       # Statik dosyalar
-│   ├── index.html                # Ana sayfa
+├── public/                       # Static files
+│   ├── index.html                # Main page
 │   ├── css/
 │   └── js/
-├── server.js                     # Uygulama giriş noktası
-├── package.json                  # Proje meta verileri
-├── .env.example                  # Ortam değişkenleri şablonu
-├── emit.html                     # Test arayüzü
-└── README.md                     # Proje dokümantasyonu
+├── server.js                     # Application entry point
+├── package.json                  # Project metadata
+├── .env.example                  # Environment variables template
+├── emit.html                     # Test interface
+└── README.md                     # Project documentation
 ```
 
 ---
 
-## 🔧 Temel Bileşenler
+## 🔧 Core Components
 
 ### 1. Application Class (`src/app.js`)
-Ana uygulama sınıfı. Express.js ve Socket.io'yu yapılandırır.
+Main application class. Configures Express.js and Socket.io.
 
 ```javascript
 class Application {
@@ -207,15 +207,15 @@ class Application {
 }
 ```
 
-**Sorumlulukları:**
-- Express.js middleware kurulumu
-- Socket.io yapılandırması
-- Route tanımlamaları
-- Hata yönetimi
+**Responsibilities:**
+- Express.js middleware setup
+- Socket.io configuration
+- Route definitions
+- Error handling
 - Graceful shutdown
 
 ### 2. Socket Controller (`src/controllers/socketController.js`)
-Socket.io event'lerini yönetir.
+Manages Socket.io events.
 
 ```javascript
 class SocketController {
@@ -228,14 +228,14 @@ class SocketController {
 }
 ```
 
-**Sorumlulukları:**
-- `dbChange` event'lerini işleme
-- Rate limiting kontrolü
+**Responsibilities:**
+- Processing `dbChange` events
+- Rate limiting control
 - Event validation
-- Response gönderimi
+- Response sending
 
 ### 3. Event Service (`src/services/eventService.js`)
-Event yayınlama mantığını yönetir.
+Manages event publishing logic.
 
 ```javascript
 class EventService {
@@ -248,13 +248,13 @@ class EventService {
 }
 ```
 
-**Sorumlulukları:**
-- Hiyerarşik kanal oluşturma
-- Event dağıtımı
+**Responsibilities:**
+- Hierarchical channel creation
+- Event distribution
 - Validation
 
 ### 4. Socket Service (`src/services/socketService.js`)
-Socket bağlantı yönetimi ve kanal abonelikleri.
+Socket connection management and channel subscriptions.
 
 ```javascript
 class SocketService {
@@ -265,14 +265,14 @@ class SocketService {
 }
 ```
 
-**Sorumlulukları:**
-- Socket bağlantı yönetimi
-- Kanal abonelik işlemleri
-- Yetkilendirme kontrolü
-- Wildcard pattern çözümleme
+**Responsibilities:**
+- Socket connection management
+- Channel subscription operations
+- Authorization control
+- Wildcard pattern resolution
 
 ### 5. Auth Middleware (`src/middleware/auth.js`)
-JWT tabanlı kimlik doğrulama.
+JWT-based authentication.
 
 ```javascript
 class AuthMiddleware {
@@ -285,21 +285,21 @@ class AuthMiddleware {
 }
 ```
 
-**Sorumlulukları:**
-- JWT token doğrulama
-- Kullanıcı bilgilerini socket'e ekleme
-- Tablo yetkileri çıkarma
+**Responsibilities:**
+- JWT token validation
+- Adding user information to socket
+- Extracting table permissions
 
 ---
 
-## 📡 API Referansı
+## 📡 API Reference
 
 ### Socket.io Events
 
-#### İstemci → Sunucu
+#### Client → Server
 
 ##### `dbChange`
-Veritabanı değişikliği bildirimi.
+Database change notification.
 
 ```javascript
 socket.emit('dbChange', {
@@ -314,126 +314,126 @@ socket.emit('dbChange', {
 });
 ```
 
-**Parametreler:**
+**Parameters:**
 - `timestamp` (string): ISO 8601 format
-- `table` (string): Tablo adı
+- `table` (string): Table name
 - `action` (string): 'insert', 'update', 'delete'
-- `record` (object): Kayıt verisi
+- `record` (object): Record data
 
 ##### `subscribe`
-Kanala abone olma.
+Subscribe to channel.
 
 ```javascript
 socket.emit('subscribe', 'db.users.update', (authorizedChannels) => {
-    console.log('Abone olunan kanallar:', authorizedChannels);
+    console.log('Subscribed channels:', authorizedChannels);
 });
 ```
 
-**Parametreler:**
-- `channel` (string): Kanal adı
-- `callback` (function): Başarı callback'i
+**Parameters:**
+- `channel` (string): Channel name
+- `callback` (function): Success callback
 
 ##### `unsubscribe`
-Kanal aboneliğini iptal etme.
+Unsubscribe from channel.
 
 ```javascript
 socket.emit('unsubscribe', 'db.users.update');
 ```
 
-#### Sunucu → İstemci
+#### Server → Client
 
-##### `db.*` (Hiyerarşik Events)
-Veritabanı değişiklik bildirimleri.
+##### `db.*` (Hierarchical Events)
+Database change notifications.
 
 ```javascript
 socket.on('db.users.update', (data) => {
-    console.log('User güncellendi:', data);
+    console.log('User updated:', data);
 });
 ```
 
 ##### `subscribed`
-Abone olma başarı bildirimi.
+Subscription success notification.
 
 ```javascript
 socket.on('subscribed', (data) => {
-    console.log('Abone olundu:', data.authorizedChannels);
+    console.log('Subscribed:', data.authorizedChannels);
 });
 ```
 
 ##### `error`
-Hata bildirimi.
+Error notification.
 
 ```javascript
 socket.on('error', (error) => {
-    console.error('Socket hatası:', error.message);
+    console.error('Socket error:', error.message);
 });
 ```
 
-### Kanal Formatları
+### Channel Formats
 
-| Format | Açıklama | Örnek |
-|--------|----------|-------|
-| `db` | Tüm değişiklikler | Tüm eventler |
-| `db.[table]` | Tablo bazlı | `db.users` |
-| `db.[table].[action]` | Tablo + işlem | `db.users.insert` |
-| `db.[table].[action].[id]` | Spesifik kayıt | `db.users.update.123` |
-| `db.[table].*.[id]` | Kayıt bazlı (tüm işlemler) | `db.users.*.123` |
-| `db.*.[action]` | İşlem bazlı (tüm tablolar) | `db.*.delete` |
+| Format | Description | Example |
+|--------|-------------|----------|
+| `db` | All changes | All events |
+| `db.[table]` | Table-based | `db.users` |
+| `db.[table].[action]` | Table + action | `db.users.insert` |
+| `db.[table].[action].[id]` | Specific record | `db.users.update.123` |
+| `db.[table].*.[id]` | Record-based (all actions) | `db.users.*.123` |
+| `db.*.[action]` | Action-based (all tables) | `db.*.delete` |
 
 ---
 
 ## 🔐 Güvenlik
 
-### JWT Token Yapısı
+### JWT Token Structure
 
-#### 1. Kullanıcı JWT Token'ı (Socket Bağlantıları)
-
-```json
-{
-  "sub": "user_id",           // Kullanıcı ID'si
-  "name": "User Name",        // Kullanıcı adı
-  "tables": "table1,table2",  // Erişilebilir tablolar (virgülle ayrılmış)
-  "iat": 1640995200,           // Token oluşturulma zamanı
-  "exp": 1640998800            // Token son kullanma zamanı
-}
-```
-
-**Alanların Açıklamaları:**
-- `sub`: Kullanıcının benzersiz kimliği
-- `name`: Kullanıcının görünen adı
-- `tables`: Kullanıcının erişebileceği tablo listesi
-- `iat`: Token'ın oluşturulma zamanı (Unix timestamp)
-- `exp`: Token'ın geçerlilik süresi (Unix timestamp)
-
-#### 2. Admin JWT Token'ı (Harici Sistemler)
-
-Harici sistemlerden DB değişiklik istekleri için:
+#### 1. User JWT Token (Socket Connections)
 
 ```json
 {
-  "sub": "admin_id",          // Admin sistem ID'si
-  "name": "Admin Name",       // Admin sistem adı
-  "admin": true,              // Admin yetkisi
-  "iat": 1753215601,          // Token oluşturulma zamanı
-  "exp": 1753219201           // Token son kullanma zamanı
+  "sub": "user_id",           // User ID
+  "name": "User Name",        // User name
+  "tables": "table1,table2",  // Accessible tables (comma-separated)
+  "iat": 1640995200,           // Token creation time
+  "exp": 1640998800            // Token expiration time
 }
 ```
 
-**Kullanım Senaryoları:**
-- CodeIgniter uygulamasından DB değişiklik bildirimi
-- Laravel API'sinden real-time güncelleme
-- Node.js mikroservislerinden event gönderimi
-- Diğer backend sistemlerden veri senkronizasyonu
+**Field Descriptions:**
+- `sub`: User's unique identifier
+- `name`: User's display name
+- `tables`: List of tables the user can access
+- `iat`: Token creation time (Unix timestamp)
+- `exp`: Token expiration time (Unix timestamp)
 
-### Güvenlik Önlemleri
+#### 2. Admin JWT Token (External Systems)
 
-#### 1. JWT Secret Güvenliği
+For DB change requests from external systems:
+
+```json
+{
+  "sub": "admin_id",          // Admin system ID
+  "name": "Admin Name",       // Admin system name
+  "admin": true,              // Admin privilege
+  "iat": 1753215601,          // Token creation time
+  "exp": 1753219201           // Token expiration time
+}
+```
+
+**Usage Scenarios:**
+- DB change notifications from CodeIgniter applications
+- Real-time updates from Laravel API
+- Event sending from Node.js microservices
+- Data synchronization from other backend systems
+
+### Security Measures
+
+#### 1. JWT Secret Security
 ```bash
-# Production'da mutlaka değiştirin!
+# Must change in production!
 export JWT_SECRET="$(openssl rand -base64 32)"
 ```
 
-#### 2. CORS Yapılandırması
+#### 2. CORS Configuration
 ```javascript
 // config/server.js
 socketio: {
@@ -470,11 +470,11 @@ static validateEventData(data) {
 
 ---
 
-## 🛠️ Geliştirme Süreci
+## 🛠️ Development Process
 
-### Geliştirme Ortamı Kurulumu
+### Development Environment Setup
 
-#### 1. Gerekli Araçlar
+#### 1. Required Tools
 ```bash
 # Node.js version manager
 nvm install 18
@@ -484,7 +484,7 @@ nvm use 18
 npm install -g nodemon eslint prettier
 ```
 
-#### 2. IDE Yapılandırması
+#### 2. IDE Configuration
 **VS Code Extensions:**
 - ES6 String HTML
 - Prettier
@@ -498,9 +498,9 @@ npm run lint
 npm run format
 ```
 
-### Kod Standartları
+### Code Standards
 
-#### 1. ESLint Yapılandırması
+#### 1. ESLint Configuration
 ```json
 {
   "extends": ["eslint:recommended"],
@@ -516,7 +516,7 @@ npm run format
 }
 ```
 
-#### 2. Prettier Yapılandırması
+#### 2. Prettier Configuration
 ```json
 {
   "tabWidth": 4,
@@ -532,9 +532,9 @@ npm run format
 - **Constants**: UPPER_SNAKE_CASE (`JWT_SECRET`)
 - **Files**: camelCase (`socketController.js`)
 
-### Yeni Özellik Ekleme
+### Adding New Features
 
-#### 1. Event Handler Ekleme
+#### 1. Adding Event Handler
 ```javascript
 // src/controllers/socketController.js
 static handleNewEvent(io, socket, data) {
@@ -548,7 +548,7 @@ static handleNewEvent(io, socket, data) {
 }
 ```
 
-#### 2. Middleware Ekleme
+#### 2. Adding Middleware
 ```javascript
 // src/middleware/newMiddleware.js
 class NewMiddleware {
@@ -559,7 +559,7 @@ class NewMiddleware {
 }
 ```
 
-#### 3. Service Ekleme
+#### 3. Adding Service
 ```javascript
 // src/services/newService.js
 class NewService {
@@ -571,9 +571,9 @@ class NewService {
 
 ---
 
-## 🧪 Test ve Debug
+## 🧪 Testing and Debug
 
-### Test Stratejisi
+### Testing Strategy
 
 #### 1. Unit Tests
 ```javascript
@@ -603,7 +603,7 @@ describe('Socket Integration', () => {
 });
 ```
 
-### Debug Teknikleri
+### Debug Techniques
 
 #### 1. Logging
 ```javascript
@@ -617,27 +617,27 @@ logger.debug('Event data', { data });
 
 #### 2. Socket.io Debug
 ```bash
-# Tüm Socket.io debug bilgileri
+# All Socket.io debug information
 DEBUG=socket.io:* node server.js
 
-# Sadece server debug
+# Server debug only
 DEBUG=socket.io:server node server.js
 ```
 
 #### 3. Chrome DevTools
 ```javascript
-// Browser console'da
+// In browser console
 socket.on('connect', () => console.log('Connected'));
 socket.on('disconnect', () => console.log('Disconnected'));
 socket.onAny((event, ...args) => console.log(event, args));
 ```
 
-### Test Araçları
+### Testing Tools
 
-#### 1. Emit.html Kullanımı
-- `http://localhost:3000/emit.html` adresini açın
-- JWT token'ı güncelleyin
-- Event gönderme ve dinleme testleri yapın
+#### 1. Using Emit.html
+- Open `http://localhost:3000/emit.html`
+- Update JWT token
+- Perform event sending and listening tests
 
 #### 2. Postman/Insomnia
 ```javascript
@@ -664,7 +664,7 @@ socket.on('connect', () => {
 
 ## 🚀 Deployment
 
-### Production Hazırlığı
+### Production Preparation
 
 #### 1. Environment Variables
 ```bash
@@ -676,7 +676,7 @@ CORS_ORIGIN=https://yourdomain.com
 LOG_LEVEL=warn
 ```
 
-#### 2. PM2 Yapılandırması
+#### 2. PM2 Configuration
 ```javascript
 // ecosystem.config.js
 module.exports = {
@@ -729,7 +729,7 @@ services:
     restart: unless-stopped
 ```
 
-### Monitoring ve Logging
+### Monitoring and Logging
 
 #### 1. Health Check Endpoint
 ```javascript
@@ -760,77 +760,77 @@ class Metrics {
 
 ---
 
-## 🔍 Sorun Giderme
+## 🔍 Troubleshooting
 
-### Yaygın Sorunlar ve Çözümleri
+### Common Issues and Solutions
 
-#### 1. Bağlantı Sorunları
+#### 1. Connection Issues
 
-**Sorun**: Socket bağlantısı kurulamıyor
+**Issue**: Cannot establish socket connection
 ```
 Error: xhr poll error
 ```
 
-**Çözüm**:
+**Solution**:
 ```javascript
-// CORS ayarlarını kontrol edin
+// Check CORS settings
 // config/server.js
 socketio: {
     cors: {
-        origin: "*", // Geliştirme için
+        origin: "*", // For development
         methods: ["GET", "POST"]
     }
 }
 ```
 
-#### 2. Authentication Sorunları
+#### 2. Authentication Issues
 
-**Sorun**: JWT token geçersiz
+**Issue**: JWT token invalid
 ```
 Error: Invalid authentication token
 ```
 
-**Çözüm**:
+**Solution**:
 ```javascript
-// Token'ı kontrol edin
+// Check the token
 const jwt = require('jsonwebtoken');
 const decoded = jwt.verify(token, process.env.JWT_SECRET);
 console.log(decoded);
 ```
 
-#### 3. Event Delivery Sorunları
+#### 3. Event Delivery Issues
 
-**Sorun**: Event'ler iletilmiyor
+**Issue**: Events are not being delivered
 
-**Debug Adımları**:
+**Debug Steps**:
 ```javascript
-// 1. Socket room'larını kontrol edin
+// 1. Check socket rooms
 console.log(io.sockets.adapter.rooms);
 
-// 2. User yetkileri kontrol edin
+// 2. Check user permissions
 console.log(socket.tables);
 
-// 3. Channel authorization kontrol edin
+// 3. Check channel authorization
 const authorized = SocketService.isAuthorizedForChannel(socket, channel);
 console.log('Authorized:', authorized);
 ```
 
-#### 4. Performance Sorunları
+#### 4. Performance Issues
 
-**Sorun**: Yavaş response süreleri
+**Issue**: Slow response times
 
-**Optimizasyon**:
+**Optimization**:
 ```javascript
-// 1. Rate limiting ayarlarını kontrol edin
-// 2. Event payload boyutunu küçültün
-// 3. Gereksiz channel subscription'ları temizleyin
-// 4. Memory leak kontrolü yapın
+// 1. Check rate limiting settings
+// 2. Reduce event payload size
+// 3. Clean up unnecessary channel subscriptions
+// 4. Check for memory leaks
 ```
 
-### Debug Komutları
+### Debug Commands
 
 ```bash
-# Detaylı logging
+# Detailed logging
 DEBUG=* npm run dev
 
 # Socket.io specific
@@ -843,30 +843,30 @@ node --inspect server.js
 node --prof server.js
 ```
 
-### Log Analizi
+### Log Analysis
 
 ```bash
-# Error log'larını filtrele
+# Filter error logs
 grep "ERROR" logs/app.log
 
-# Connection log'larını say
+# Count connection logs
 grep "Socket connected" logs/app.log | wc -l
 
-# Rate limit ihlallerini bul
+# Find rate limit violations
 grep "Rate limit exceeded" logs/app.log
 ```
 
 ---
 
-## 📚 Ek Kaynaklar
+## 📚 Additional Resources
 
-### Dokümantasyon
+### Documentation
 - [Socket.io Documentation](https://socket.io/docs/)
 - [Express.js Guide](https://expressjs.com/)
 - [JWT.io](https://jwt.io/)
 - [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
 
-### Geliştirme Araçları
+### Development Tools
 - [Postman](https://www.postman.com/) - API testing
 - [Socket.io Client Tool](https://amritb.github.io/socketio-client-tool/) - WebSocket testing
 - [JWT Debugger](https://jwt.io/#debugger-io) - Token debugging
@@ -878,8 +878,8 @@ grep "Rate limit exceeded" logs/app.log
 
 ---
 
-**Son Güncelleme**: 2024-01-15  
-**Versiyon**: 1.0.0  
-**Geliştirici**: Şafak Bahçe
+**Last Updated**: 2024-01-15  
+**Version**: 1.0.0  
+**Developer**: Şafak Bahçe
 
-> Bu döküman projeye yeni başlayan geliştiriciler için hazırlanmıştır. Sorularınız için GitHub Issues sayfasını kullanabilirsiniz.
+> This documentation is prepared for developers new to the project. You can use the GitHub Issues page for your questions.

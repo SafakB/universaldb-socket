@@ -1,82 +1,82 @@
-# 🚀 Hızlı Başlangıç Rehberi
+# 🚀 Quick Start Guide
 
-## 5 Dakikada Çalıştır
+## Run in 5 Minutes
 
-### 1. Kurulum (2 dakika)
+### 1. Installation (2 minutes)
 ```bash
-# Bağımlılıkları yükle
+# Install dependencies
 npm install
 
-# Ortam değişkenlerini kopyala
+# Copy environment variables
 cp .env.example .env
 
-# Sunucuyu başlat
+# Start server
 npm run dev
 ```
 
-### 2. Test Et (3 dakika)
+### 2. Test (3 minutes)
 ```bash
-# Tarayıcıda aç
+# Open in browser
 http://localhost:3000/emit.html
 ```
 
-**Test Senaryosu:**
-1. Sol panelde "users" tablosunu seç
-2. "update" işlemini seç
-3. "Emit Gönder" butonuna tıkla
-4. Sağ panelde "db.users" kanalını dinle
-5. Event'in geldiğini gör
+**Test Scenario:**
+1. Select "users" table in left panel
+2. Select "update" operation
+3. Click "Send Emit" button
+4. Listen to "db.users" channel in right panel
+5. See the event arrive
 
 ---
 
-## 💡 Temel Kullanım Örnekleri
+## 💡 Basic Usage Examples
 
-### Örnek 1: Basit Event Dinleme
+### Example 1: Simple Event Listening
 ```javascript
 const io = require('socket.io-client');
 
-// Bağlan
+// Connect
 const socket = io('http://localhost:3000', {
     auth: {
         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
     }
 });
 
-// Users tablosundaki tüm değişiklikleri dinle
+// Listen to all changes in users table
 socket.emit('subscribe', 'db.users');
 socket.on('db.users', (data) => {
-    console.log('User değişikliği:', data);
+    console.log('User change:', data);
 });
 ```
 
-### Örnek 2: Spesifik İşlem Dinleme
+### Example 2: Listening to Specific Operations
 ```javascript
-// Sadece yeni kullanıcı eklemelerini dinle
+// Listen only to new user insertions
 socket.emit('subscribe', 'db.users.insert');
 socket.on('db.users.insert', (data) => {
-    console.log('Yeni kullanıcı eklendi:', data.record);
+    console.log('New user added:', data.record);
 });
 ```
 
-### Örnek 3: Belirli Kayıt Dinleme
+### Example 3: Listening to Specific Records
 ```javascript
-// ID'si 123 olan kullanıcının tüm değişikliklerini dinle
+// Listen to all changes for user with ID 123
 socket.emit('subscribe', 'db.users.*.123');
 socket.on('db.users.*.123', (data) => {
-    console.log('Kullanıcı 123 güncellendi:', data);
+    console.log('User 123 updated:', data);
 });
 ```
 
-### Örnek 4: Event Gönderme
+### Example 4: Sending Events
 ```javascript
-// Veritabanı değişikliği bildir
+// Notify database change
 socket.emit('dbChange', {
     timestamp: new Date().toISOString(),
     table: 'products',
     action: 'insert',
     record: {
         id: 456,
-        name: 'Yeni Ürün',
+        name: 'New Product',
         price: 99.99
     }
 });
@@ -84,22 +84,22 @@ socket.emit('dbChange', {
 
 ---
 
-## 🎯 Gerçek Dünya Senaryoları
+## 🎯 Real-World Scenarios
 
-### Senaryo 1: E-ticaret Stok Takibi
+### Scenario 1: E-commerce Stock Tracking
 ```javascript
-// Ürün stok değişikliklerini dinle
+// Listen to product stock changes
 socket.emit('subscribe', 'db.products.update');
 socket.on('db.products.update', (data) => {
     if (data.record.stock < 10) {
-        alert(`Düşük stok: ${data.record.name} - ${data.record.stock} adet`);
+        alert(`Low stock: ${data.record.name} - ${data.record.stock} units`);
     }
 });
 ```
 
-### Senaryo 2: Canlı Sipariş Takibi
+### Scenario 2: Live Order Tracking
 ```javascript
-// Yeni siparişleri dinle
+// Listen to new orders
 socket.emit('subscribe', 'db.orders.insert');
 socket.on('db.orders.insert', (data) => {
     updateOrderDashboard(data.record);
@@ -107,9 +107,9 @@ socket.on('db.orders.insert', (data) => {
 });
 ```
 
-### Senaryo 3: Kullanıcı Aktivite Monitörü
+### Scenario 3: User Activity Monitor
 ```javascript
-// Tüm kullanıcı aktivitelerini dinle
+// Listen to all user activities
 socket.emit('subscribe', 'db.users');
 socket.on('db.users', (data) => {
     logUserActivity({
@@ -122,11 +122,11 @@ socket.on('db.users', (data) => {
 
 ---
 
-## 🔧 Hızlı Yapılandırma
+## 🔧 Quick Configuration
 
-### 3. JWT Token Oluşturma
+### 3. JWT Token Creation
 
-#### Kullanıcı Token'ı (Socket Bağlantıları İçin)
+#### User Token (For Socket Connections)
 ```javascript
 const jwt = require('jsonwebtoken');
 
@@ -135,31 +135,31 @@ const userToken = jwt.sign({
     name: 'User Name',
     tables: 'users,products,orders',
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 saat
+    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour
 }, 'your-secret-key');
 ```
 
-#### Admin Token'ı (Harici Sistemler İçin)
+#### Admin Token (For External Systems)
 ```javascript
 const jwt = require('jsonwebtoken');
 
-// Harici sistemlerden DB değişiklik istekleri için
+// For DB change requests from external systems
 const adminToken = jwt.sign({
     sub: 'external_system_id',
     name: 'External System Name',
     admin: true,
     iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 saat
+    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour
 }, 'your-secret-key');
 
-// Kullanım örneği
+// Usage example
 const io = require('socket.io-client');
 const socket = io('http://localhost:3001', {
     auth: { token: adminToken }
 });
 
 socket.on('connect', () => {
-    // DB değişiklik eventi gönder
+    // Send DB change event
     socket.emit('dbChange', {
         timestamp: new Date().toISOString(),
         table: 'users',
@@ -169,7 +169,7 @@ socket.on('connect', () => {
 });
 ```
 
-### Hızlı Test Scripti
+### Quick Test Script
 ```javascript
 // test.js
 const io = require('socket.io-client');
@@ -179,9 +179,9 @@ const socket = io('http://localhost:3000', {
 });
 
 socket.on('connect', () => {
-    console.log('✅ Bağlantı başarılı');
+    console.log('✅ Connection successful');
     
-    // Test event gönder
+    // Send test event
     socket.emit('dbChange', {
         timestamp: new Date().toISOString(),
         table: 'test',
@@ -191,49 +191,49 @@ socket.on('connect', () => {
 });
 
 socket.on('error', (error) => {
-    console.error('❌ Hata:', error);
+    console.error('❌ Error:', error);
 });
 ```
 
 ---
 
-## 🐛 Hızlı Sorun Giderme
+## 🐛 Quick Troubleshooting
 
-### Bağlantı Sorunu
+### Connection Issues
 ```bash
-# CORS hatası alıyorsanız
-# .env dosyasında:
+# If you get CORS error
+# In .env file:
 CORS_ORIGIN=*
 ```
 
-### Token Sorunu
+### Token Issues
 ```javascript
-// Token'ı test edin
+// Test your token
 const jwt = require('jsonwebtoken');
 try {
     const decoded = jwt.verify('your-token', 'your-secret');
-    console.log('Token geçerli:', decoded);
+    console.log('Token valid:', decoded);
 } catch (error) {
-    console.error('Token geçersiz:', error.message);
+    console.error('Token invalid:', error.message);
 }
 ```
 
-### Event Gelmiyorsa
+### Events Not Coming
 ```javascript
-// Debug modunda çalıştırın
+// Run in debug mode
 DEBUG=socket.io:* npm run dev
 
-// Kanal aboneliğini kontrol edin
+// Check channel subscription
 socket.emit('subscribe', 'db.users', (response) => {
-    console.log('Abone olunan kanallar:', response);
+    console.log('Subscribed channels:', response);
 });
 ```
 
 ---
 
-## 📱 Frontend Entegrasyonu
+## 📱 Frontend Integration
 
-### React Örneği
+### React Example
 ```jsx
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
@@ -266,7 +266,7 @@ function UserList() {
 }
 ```
 
-### Vue.js Örneği
+### Vue.js Example
 ```vue
 <template>
   <div>
@@ -307,9 +307,9 @@ export default {
 
 ---
 
-## 🎨 UI Örnekleri
+## 🎨 UI Examples
 
-### Basit Dashboard
+### Simple Dashboard
 ```html
 <!DOCTYPE html>
 <html>
@@ -319,12 +319,12 @@ export default {
 </head>
 <body>
     <div id="stats">
-        <div>Toplam Kullanıcı: <span id="userCount">0</span></div>
-        <div>Aktif Siparişler: <span id="orderCount">0</span></div>
+        <div>Total Users: <span id="userCount">0</span></div>
+        <div>Active Orders: <span id="orderCount">0</span></div>
     </div>
     
     <div id="activity">
-        <h3>Canlı Aktivite</h3>
+        <h3>Live Activity</h3>
         <ul id="activityList"></ul>
     </div>
     
@@ -333,18 +333,18 @@ export default {
             auth: { token: 'your-jwt-token' }
         });
         
-        // Kullanıcı değişikliklerini dinle
+        // Listen to user changes
         socket.emit('subscribe', 'db.users');
         socket.on('db.users', (data) => {
             updateUserCount();
-            addActivity(`Kullanıcı ${data.action}: ${data.record.name}`);
+            addActivity(`User ${data.action}: ${data.record.name}`);
         });
         
-        // Sipariş değişikliklerini dinle
+        // Listen to order changes
         socket.emit('subscribe', 'db.orders');
         socket.on('db.orders', (data) => {
             updateOrderCount();
-            addActivity(`Sipariş ${data.action}: #${data.record.id}`);
+            addActivity(`Order ${data.action}: #${data.record.id}`);
         });
         
         function addActivity(message) {
@@ -359,20 +359,69 @@ export default {
 
 ---
 
-## 🔗 Yararlı Linkler
+## 🔗 Useful Links
 
-- **Test Arayüzü**: http://localhost:3000/emit.html
+- **Test Interface**: http://localhost:3000/emit.html
 - **Health Check**: http://localhost:3000/api/health
 - **Socket.io Admin UI**: https://admin.socket.io/
 - **JWT Debugger**: https://jwt.io/#debugger-io
 
 ---
 
-## 📞 Destek
+## 🎯 Next Steps
 
-Sorularınız için:
-1. `DEVELOPER_GUIDE.md` dosyasını inceleyin
-2. GitHub Issues sayfasını kullanın
-3. Debug modunda (`DEBUG=* npm run dev`) çalıştırın
+### 1. Advanced Configuration
+- [Developer Guide](DEVELOPER_GUIDE.md) - Detailed technical documentation
+- [API Examples](API_EXAMPLES.md) - Code examples for different platforms
 
-**Hızlı başlangıç tamamlandı! 🎉**
+### 2. Production Environment
+- Environment variables configuration
+- SSL/TLS certificate setup
+- Load balancer configuration
+- Monitoring and logging setup
+
+### 3. Integration
+- Automatic event sending with MySQL triggers
+- Microservice architecture integration
+- CI/CD pipeline setup
+
+### 4. Performance Optimization
+- Horizontal scaling with Redis adapter
+- Connection pooling optimization
+- Rate limiting fine-tuning
+
+---
+
+## 🆘 Help and Support
+
+### Having Issues?
+
+1. **Check Documentation**
+   - [README.md](README.md) - General information
+   - [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) - Technical details
+   - [API_EXAMPLES.md](API_EXAMPLES.md) - Code examples
+
+2. **Common Issues**
+   - JWT token errors
+   - CORS issues
+   - Rate limiting issues
+   - Connection problems
+
+3. **Debug Mode**
+   ```bash
+   DEBUG=socket.io* npm run dev
+   ```
+
+4. **Log Check**
+   ```bash
+   tail -f logs/app.log
+   ```
+
+### Contact
+- **GitHub Issues**: Bug reports and feature requests
+- **Email**: For technical support
+- **Documentation**: For updated documentation
+
+---
+
+**🎉 Congratulations! Your MySQL Socket.io Event Server is now running!**

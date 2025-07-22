@@ -1,95 +1,95 @@
 # MySQL Socket Event Server
 
-MySQL veritabanı değişikliklerini gerçek zamanlı olarak istemcilere ileten, **Express.js** ve **Socket.io** tabanlı event server'ı. JWT authentication ve hiyerarşik kanal yapısı ile güvenli ve ölçeklenebilir real-time veri iletimi sağlar.
+A **Express.js** and **Socket.io** based event server that delivers MySQL database changes to clients in real-time. Provides secure and scalable real-time data transmission with JWT authentication and hierarchical channel structure.
 
-## 🚀 Özellikler
+## 🚀 Features
 
-- **🔐 JWT Authentication:** Token tabanlı güvenli bağlantı ve yetkilendirme
-- **📡 Gerçek Zamanlı Event Publishing:** Veritabanı değişiklikleri (insert, update, delete) anında iletilir
-- **🏗️ Hiyerarşik Kanal Yapısı:** Tablolar, işlemler ve kayıt ID'lerine göre esnek dinleme
-- **🏠 Room (Oda) Mantığı:** İstemciler sadece abone oldukları kanaldaki eventleri alır
-- **🎨 Modern Web UI:** Bootstrap 5 ile responsive tasarım ve JSON syntax highlighting
-- **🛡️ CORS Desteği:** Güvenli ve özelleştirilebilir cross-origin bağlantılar
-- **📊 Tablo Bazlı Yetkilendirme:** Kullanıcılar sadece yetkili oldukları tabloları dinleyebilir
+- **🔐 JWT Authentication:** Token-based secure connection and authorization
+- **📡 Real-Time Event Publishing:** Database changes (insert, update, delete) are transmitted instantly
+- **🏗️ Hierarchical Channel Structure:** Flexible listening based on tables, operations, and record IDs
+- **🏠 Room Logic:** Clients only receive events from channels they subscribe to
+- **🎨 Modern Web UI:** Responsive design with Bootstrap 5 and JSON syntax highlighting
+- **🛡️ CORS Support:** Secure and customizable cross-origin connections
+- **📊 Table-Based Authorization:** Users can only listen to tables they have permission for
 
-## 📋 Gereksinimler
+## 📋 Requirements
 
-- Node.js (v16+ önerilir)
-- npm veya yarn
+- Node.js (v16+ recommended)
+- npm or yarn
 
-## ⚡ Hızlı Başlangıç
+## ⚡ Quick Start
 
-### 1. Projeyi Klonlayın
+### 1. Clone the Project
 ```bash
 git clone <repository-url>
 cd mysql-socket
 ```
 
-### 2. Bağımlılıkları Yükleyin
+### 2. Install Dependencies
 ```bash
 npm install
 ```
 
-### 3. Ortam Değişkenlerini Yapılandırın
+### 3. Configure Environment Variables
 ```bash
 cp .env.example .env
-# .env dosyasını kendi yapılandırmanızla düzenleyin
+# Edit the .env file with your configuration
 ```
 
-### 4. Sunucuyu Başlatın
+### 4. Start the Server
 ```bash
-# Geliştirme modu (otomatik yeniden başlatma)
+# Development mode (auto-restart)
 npm run dev
 
-# Üretim modu
+# Production mode
 npm start
 ```
 
-### 5. Web Arayüzünü Açın
-`emit.html` dosyasını tarayıcınızda açın veya: http://localhost:3000/emit.html
+### 5. Open the Web Interface
+Open the `emit.html` file in your browser or visit: http://localhost:3000/emit.html
 
 
-## 📁 Proje Yapısı
+## 📁 Project Structure
 
 ```
 mysql-socket/
 ├── src/
-│   ├── app.js                    # Ana uygulama sınıfı
+│   ├── app.js                    # Main application class
 │   ├── config/
-│   │   ├── server.js             # Sunucu yapılandırması
-│   │   └── jwt.js                # JWT yapılandırması
+│   │   ├── server.js             # Server configuration
+│   │   └── jwt.js                # JWT configuration
 │   ├── controllers/
-│   │   ├── socketController.js   # Socket.io kontrolcüsü
-│   │   └── apiController.js      # REST API kontrolcüsü
+│   │   ├── socketController.js   # Socket.io controller
+│   │   └── apiController.js      # REST API controller
 │   ├── middleware/
-│   │   ├── auth.js               # Kimlik doğrulama middleware
-│   │   ├── rateLimiter.js        # Hız sınırlama middleware
-│   │   └── errorHandler.js       # Hata yönetimi middleware
+│   │   ├── auth.js               # Authentication middleware
+│   │   ├── rateLimiter.js        # Rate limiting middleware
+│   │   └── errorHandler.js       # Error handling middleware
 │   ├── services/
-│   │   ├── eventService.js       # Event yayınlama servisi
-│   │   └── socketService.js      # Socket yönetim servisi
+│   │   ├── eventService.js       # Event publishing service
+│   │   └── socketService.js      # Socket management service
 │   ├── utils/
-│   │   ├── logger.js             # Loglama yardımcısı
-│   │   └── validator.js          # Veri doğrulama yardımcısı
+│   │   ├── logger.js             # Logging utility
+│   │   └── validator.js          # Data validation utility
 │   └── routes/
-│       └── api.js                # API rotaları
+│       └── api.js                # API routes
 ├── public/
-│   ├── index.html                # Ana web arayüzü
+│   ├── index.html                # Main web interface
 │   ├── css/
-│   │   └── style.css             # CSS stilleri
+│   │   └── style.css             # CSS styles
 │   └── js/
-│       └── client.js             # İstemci JavaScript kütüphanesi
-├── server.js                     # Ana giriş noktası
-├── package.json                  # Proje bağımlılıkları
-├── .env.example                  # Ortam değişkenleri örneği
-├── .gitignore                    # Git ignore dosyası
-└── README.md                     # Bu dosya
+│       └── client.js             # Client JavaScript library
+├── server.js                     # Main entry point
+├── package.json                  # Project dependencies
+├── .env.example                  # Environment variables example
+├── .gitignore                    # Git ignore file
+└── README.md                     # This file
 ```
 
 
-## 🔧 Kurulum ve Yapılandırma
+## 🔧 Installation and Configuration
 
-### Bağımlılıklar
+### Dependencies
 ```json
 {
   "dependencies": {
@@ -100,40 +100,40 @@ mysql-socket/
 }
 ```
 
-### JWT Yapılandırması
-Production ortamında `JWT_SECRET` değerini environment variable olarak ayarlayın:
+### JWT Configuration
+Set the `JWT_SECRET` value as an environment variable in production:
 ```bash
 export JWT_SECRET="your-super-secret-key"
 ```
 
-## 📡 Kanal Yapısı ve Event Sistemi
+## 📡 Channel Structure and Event System
 
-### Hiyerarşik Kanal Adları
+### Hierarchical Channel Names
 
-| Kanal Formatı | Açıklama | Örnek |
+| Channel Format | Description | Example |
 |---------------|----------|-------|
-| `db` | Tüm veritabanı değişiklikleri | Tüm eventler |
-| `db.[table]` | Belirli bir tablo | `db.users` |
-| `db.[table].[action]` | Tablo + işlem türü | `db.users.insert` |
-| `db.[table].[action].[id]` | Tablo + işlem + kayıt ID | `db.users.update.123` |
-| `db.[table].*.[id]` | Tablo + kayıt ID (tüm işlemler) | `db.users.*.123` |
-| `db.*.[action]` | Tüm tablolar + belirli işlem | `db.*.delete` |
+| `db` | All database changes | All events |
+| `db.[table]` | Specific table | `db.users` |
+| `db.[table].[action]` | Table + operation type | `db.users.insert` |
+| `db.[table].[action].[id]` | Table + operation + record ID | `db.users.update.123` |
+| `db.[table].*.[id]` | Table + record ID (all operations) | `db.users.*.123` |
+| `db.*.[action]` | All tables + specific operation | `db.*.delete` |
 
-### Wildcard Desteği
+### Wildcard Support
 ```javascript
-// Tüm tablolarda insert işlemlerini dinle
+// Listen to insert operations in all tables
 socket.emit('subscribe', 'db.*.insert');
 
-// Users tablosundaki tüm işlemleri dinle
+// Listen to all operations in users table
 socket.emit('subscribe', 'db.users');
 
-// Belirli bir kaydın tüm değişikliklerini dinle
+// Listen to all changes of a specific record
 socket.emit('subscribe', 'db.products.*.456');
 ```
 
-## 📨 Event Formatı
+## 📨 Event Format
 
-### dbChange Event Yapısı
+### dbChange Event Structure
 ```json
 {
   "timestamp": "2024-01-15T10:30:45.123Z",
@@ -148,18 +148,18 @@ socket.emit('subscribe', 'db.products.*.456');
 }
 ```
 
-### Desteklenen İşlem Türleri
-- `insert` - Yeni kayıt ekleme
-- `update` - Mevcut kayıt güncelleme
-- `delete` - Kayıt silme
+### Supported Operation Types
+- `insert` - Adding new record
+- `update` - Updating existing record
+- `delete` - Deleting record
 
-## 🔐 Güvenlik ve Authentication
+## 🔐 Security and Authentication
 
-### JWT Token Yapısı
+### JWT Token Structure
 
-#### 1. Kullanıcı JWT Token'ı (Socket Bağlantıları İçin)
+#### 1. User JWT Token (For Socket Connections)
 
-Socket.io bağlantıları için kullanılan JWT token yapısı:
+JWT token structure used for Socket.io connections:
 
 ```json
 {
@@ -171,16 +171,16 @@ Socket.io bağlantıları için kullanılan JWT token yapısı:
 }
 ```
 
-**Token Alanları:**
-- `sub`: Kullanıcı ID'si (string)
-- `name`: Kullanıcı adı (string)
-- `tables`: Erişilebilir tablolar (virgülle ayrılmış string)
-- `iat`: Token oluşturma zamanı (Unix timestamp)
-- `exp`: Token son kullanma zamanı (Unix timestamp)
+**Token Fields:**
+- `sub`: User ID (string)
+- `name`: User name (string)
+- `tables`: Accessible tables (comma-separated string)
+- `iat`: Token creation time (Unix timestamp)
+- `exp`: Token expiration time (Unix timestamp)
 
-#### 2. Admin JWT Token'ı (Harici Sistemler İçin)
+#### 2. Admin JWT Token (For External Systems)
 
-Harici sistemlerden (CodeIgniter, Laravel, Node.js vb.) DB değişiklik istekleri için kullanılan admin JWT token yapısı:
+Admin JWT token structure used for DB change requests from external systems (CodeIgniter, Laravel, Node.js etc.):
 
 ```json
 {
@@ -192,89 +192,240 @@ Harici sistemlerden (CodeIgniter, Laravel, Node.js vb.) DB değişiklik istekler
 }
 ```
 
-**Token Alanları:**
-- `sub`: Admin sistemin benzersiz kimliği (string)
-- `name`: Admin sistemin görünen adı (string)
-- `admin`: Admin yetkisi (her zaman true)
-- `iat`: Token oluşturma zamanı (Unix timestamp)
-- `exp`: Token son kullanma zamanı (Unix timestamp)
+**Token Fields:**
+- `sub`: Unique identifier of admin system (string)
+- `name`: Display name of admin system (string)
+- `admin`: Admin privilege (always true)
+- `iat`: Token creation time (Unix timestamp)
+- `exp`: Token expiration time (Unix timestamp)
 
-**Yetkilendirme Sistemi:**
-- **Kullanıcı JWT:** Sadece `tables` alanında belirtilen tablolara erişim
-- **Admin JWT:** Tüm tablolara tam erişim, rate limiter'a takılmaz
-- Boş `tables` alanı hiçbir tabloya erişim vermez
+**Authorization System:**
+- **User JWT:** Access only to tables specified in `tables` field
+- **Admin JWT:** Full access to all tables, bypasses rate limiter
+- Empty `tables` field grants no table access
 
-### Bağlantı Örneği
+### Connection Example
 ```javascript
-const socket = io('http://localhost:3000', {
+const io = require('socket.io-client');
+const jwt = require('jsonwebtoken');
+
+// Create JWT token
+const token = jwt.sign({
+  sub: 'user123',
+  name: 'John Doe',
+  tables: ['users', 'posts']
+}, 'your-secret-key');
+
+// Socket connection
+const socket = io('http://localhost:3001', {
   auth: {
-    token: 'your-jwt-token-here'
+    token: token
   }
 });
 ```
 
-## 💻 İstemci Kullanımı
+## 🌐 API Endpoints
 
-### Kanal Dinleme
+### POST /api/emit
+Event sending endpoint
+
+**Request Body:**
+```json
+{
+  "channel": "db.users.insert",
+  "data": {
+    "id": 123,
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+}
+```
+
+**Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+Content-Type: application/json
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Event emitted successfully",
+  "channel": "db.users.insert",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+```
+
+## 💻 Client Usage
+
+### JavaScript (Browser/Node.js)
+
 ```javascript
-// Kanala abone ol
-socket.emit('subscribe', 'db.users.update', (joinedChannels) => {
-  console.log('Abone olunan kanallar:', joinedChannels);
+const socket = io('http://localhost:3001', {
+  auth: { token: 'your-jwt-token' }
 });
 
-// Event dinle
-socket.on('db.users.update', (data) => {
-  console.log('User güncellendi:', data);
+// Subscribe to channel
+socket.emit('subscribe', 'db.users.insert');
+
+// Listen to events
+socket.on('dbChange', (data) => {
+  console.log('Database change:', data);
+});
+
+// Check connection status
+socket.on('connect', () => {
+  console.log('Connected to server');
+});
+
+socket.on('disconnect', () => {
+  console.log('Disconnected from server');
 });
 ```
 
-### Event Gönderme
+### Python Client
+
+```python
+import socketio
+import jwt
+import json
+
+# Create JWT token
+token = jwt.encode({
+    'sub': 'user123',
+    'name': 'Python Client',
+    'tables': ['users', 'orders']
+}, 'your-secret-key', algorithm='HS256')
+
+# Socket.io client
+sio = socketio.Client()
+
+@sio.event
+def connect():
+    print('Connected to server')
+    # Subscribe to channel
+    sio.emit('subscribe', 'db.users')
+
+@sio.event
+def dbChange(data):
+    print('Database change received:', json.dumps(data, indent=2))
+
+@sio.event
+def disconnect():
+    print('Disconnected from server')
+
+# Connect
+sio.connect('http://localhost:3001', auth={'token': token})
+sio.wait()
+```
+
+### Channel Listening
+```javascript
+// Subscribe to channel
+socket.emit('subscribe', 'db.users.update', (joinedChannels) => {
+  console.log('Subscribed channels:', joinedChannels);
+});
+
+// Listen to events
+socket.on('db.users.update', (data) => {
+  console.log('User updated:', data);
+});
+```
+
+### Event Sending
 ```javascript
 const changeData = {
-  timestamp: new Date().toISOString(),
   table: 'users',
-  action: 'insert',
-  record: {
-    id: 456,
-    name: 'Jane Smith',
-    email: 'jane@example.com'
-  }
+  action: 'update',
+  id: 123,
+  data: {
+    name: 'John Updated',
+    email: 'john.updated@example.com'
+  },
+  timestamp: new Date().toISOString()
 };
 
+// Send via Socket
 socket.emit('dbChange', changeData);
+
+// Send via HTTP API
+fetch('http://localhost:3001/api/emit', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${jwtToken}`
+  },
+  body: JSON.stringify({
+    channel: 'db.users.update.123',
+    data: changeData
+  })
+});
 ```
 
-## 🎨 Web Arayüzü
+## 🔧 Configuration
 
-### Özellikler
-- **Emit Paneli:** Event gönderme formu
-- **Dinleme Paneli:** Kanal aboneliği ve canlı event görüntüleme
-- **JSON Syntax Highlighting:** Renkli ve okunabilir JSON formatı
-- **Responsive Tasarım:** Bootstrap 5 ile mobil uyumlu
-- **Real-time Updates:** Anlık event akışı
+### Environment Variables
 
-### Desteklenen Tablolar
-- `pages` - Sayfa yönetimi
-- `categories` - Kategori sistemi
-- `users` - Kullanıcı yönetimi
-- `products` - Ürün kataloğu
-- `orders` - Sipariş takibi
-- `comments` - Yorum sistemi
+```bash
+# .env file
+PORT=3001
+JWT_SECRET=your-super-secret-jwt-key
+CORS_ORIGIN=*
+LOG_LEVEL=info
+RATE_LIMIT_WINDOW=60000
+RATE_LIMIT_MAX=100
+```
 
-## 🔧 API Referansı
+### Server Configuration
+
+```javascript
+// src/config/server.js
+module.exports = {
+  port: process.env.PORT || 3001,
+  cors: {
+    origin: process.env.CORS_ORIGIN || "*",
+    methods: ["GET", "POST"]
+  },
+  rateLimit: {
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW) || 60000,
+    max: parseInt(process.env.RATE_LIMIT_MAX) || 100
+  }
+};
+```
+
+## 🎨 Web Interface
+
+### Features
+- **Emit Panel:** Event sending form
+- **Listening Panel:** Channel subscription and live event display
+- **JSON Syntax Highlighting:** Colorful and readable JSON format
+- **Responsive Design:** Mobile-friendly with Bootstrap 5
+- **Real-time Updates:** Instant event streaming
+
+### Supported Tables
+- `pages` - Page management
+- `categories` - Category system
+- `users` - User management
+- `products` - Product catalog
+- `orders` - Order tracking
+- `comments` - Comment system
+
+## 🔧 API Reference
 
 ### Socket Events
 
-#### İstemci → Sunucu
-- `subscribe(channel, callback)` - Kanala abone ol
-- `dbChange(data)` - Veritabanı değişikliği bildir
+#### Client → Server
+- `subscribe(channel, callback)` - Subscribe to channel
+- `dbChange(data)` - Report database change
 
-#### Sunucu → İstemci
-- `db.*` - Hiyerarşik event kanalları
-- `error` - Hata mesajları
+#### Server → Client
+- `db.*` - Hierarchical event channels
+- `error` - Error messages
 
 ### HTTP Endpoints
-- `GET /` - Sunucu durumu kontrolü
+- `GET /` - Server status check
 
 ## 🚀 Production Deployment
 
@@ -285,13 +436,13 @@ JWT_SECRET=your-production-secret-key
 NODE_ENV=production
 ```
 
-### PM2 ile Çalıştırma
+### Running with PM2
 ```bash
 npm install -g pm2
 pm2 start server.js --name mysql-socket-server
 ```
 
-### Docker Desteği
+### Docker Support
 ```dockerfile
 FROM node:16-alpine
 WORKDIR /app
@@ -302,74 +453,74 @@ EXPOSE 3000
 CMD ["node", "server.js"]
 ```
 
-## 📊 Performans ve Ölçekleme
+## 📊 Performance and Scaling
 
-### Önerilen Yapılandırma
-- **Redis Adapter:** Horizontal scaling için
-- **Load Balancer:** Multiple instance desteği
-- **Connection Pooling:** Veritabanı bağlantı optimizasyonu
-- **Rate Limiting:** DDoS koruması
+### Recommended Configuration
+- **Redis Adapter:** For horizontal scaling
+- **Load Balancer:** Multiple instance support
+- **Connection Pooling:** Database connection optimization
+- **Rate Limiting:** DDoS protection
 
 ### Monitoring
 ```javascript
-// Bağlantı sayısı takibi
+// Connection count tracking
 io.engine.clientsCount
 
-// Room bilgileri
+// Room information
 io.sockets.adapter.rooms
 ```
 
-## 🛠️ Geliştirme
+## 🛠️ Development
 
-### Debug Modu
+### Debug Mode
 ```bash
 DEBUG=socket.io:* node server.js
 ```
 
-### Test Komutları
+### Test Commands
 ```bash
-# Unit testler
+# Unit tests
 npm test
 
-# Coverage raporu
+# Coverage report
 npm run coverage
 
 # Linting
 npm run lint
 ```
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📄 Lisans
+## 📄 License
 
-MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+MIT License - See the [LICENSE](LICENSE) file for details.
 
-## 📚 Geliştirici Dökümanları
+## 📚 Developer Documentation
 
-### Yeni Başlayanlar İçin
-- **[Hızlı Başlangıç Rehberi](QUICK_START.md)** - 5 dakikada projeyi çalıştırın
-- **[Geliştirici Rehberi](DEVELOPER_GUIDE.md)** - Kapsamlı geliştirici dökümanı
-- **[API Örnekleri](API_EXAMPLES.md)** - Detaylı kullanım örnekleri ve best practices
+### For Beginners
+- **[Quick Start Guide](QUICK_START.md)** - Get the project running in 5 minutes
+- **[Developer Guide](DEVELOPER_GUIDE.md)** - Comprehensive developer documentation
+- **[API Examples](API_EXAMPLES.md)** - Detailed usage examples and best practices
 
-### Önemli Dosyalar
-- `emit.html` - Test arayüzü ve örnek kullanım
-- `.env.example` - Ortam değişkenleri şablonu
-- `src/` - Ana kaynak kodları
+### Important Files
+- `emit.html` - Test interface and example usage
+- `.env.example` - Environment variables template
+- `src/` - Main source code
 
-## 🆘 Destek
+## 🆘 Support
 
-- **Issues:** GitHub Issues sayfasını kullanın
-- **Geliştirici Rehberi:** [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
-- **API Örnekleri:** [API_EXAMPLES.md](API_EXAMPLES.md)
-- **Hızlı Başlangıç:** [QUICK_START.md](QUICK_START.md)
+- **Issues:** Use GitHub Issues page
+- **Developer Guide:** [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+- **API Examples:** [API_EXAMPLES.md](API_EXAMPLES.md)
+- **Quick Start:** [QUICK_START.md](QUICK_START.md)
 
 ---
 
-**Geliştirici:** Şafak Bahçe
-**Versiyon:** 1.0.0
+**Developer:** Şafak Bahçe
+**Version:** 1.0.0
