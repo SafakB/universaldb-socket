@@ -142,13 +142,17 @@
             if (!channel) return;
             // Önce eski dinlemeyi kaldır
             if (currentChannel) {
+                // Sunucudan unsubscribe ol
+                listenSocket.emit('unsubscribe', { channel: currentChannel });
                 listenSocket.off(currentChannel);
                 document.getElementById('messages').innerHTML = '';
             }
-            currentChannel = channel;
+            
             // Önceki dinleyicileri temizle
-            if (currentChannel && currentAuthorizedChannels) {
+            if (currentAuthorizedChannels) {
                 currentAuthorizedChannels.forEach(ch => {
+                    // Her yetkili kanaldan unsubscribe ol
+                    listenSocket.emit('unsubscribe', { channel: ch });
                     listenSocket.off(ch);
                 });
                 document.getElementById('messages').innerHTML = '';
@@ -157,6 +161,10 @@
             // Önceki 'subscribed' ve 'error' event listener'larını temizle
             listenSocket.off('subscribed');
             listenSocket.off('error');
+            
+            // Değişkenleri sıfırla
+            currentChannel = null;
+            currentAuthorizedChannels = null;
 
             // Sunucuya subscribe isteği gönder
             listenSocket.emit('subscribe', { channel: channel });

@@ -69,9 +69,28 @@ class SocketService {
         try {
             const { channel } = data;
             
-            socket.leave(channel);
-            socket.emit('unsubscribed', { channel });
-            logger.info(`Socket ${socket.id} unsubscribed from: ${channel}`);
+            // Eğer wildcard pattern veya genel kanal ise, tüm yetkili kanallardan ayrıl
+            const authorizedChannels = this.getAuthorizedChannels(socket, channel);
+            
+            if (authorizedChannels.length > 0) {
+                // Tüm yetkili kanallardan ayrıl
+                authorizedChannels.forEach(ch => {
+                    socket.leave(ch);
+                });
+                socket.emit('unsubscribed', { 
+                    channel: channel,
+                    unsubscribedChannels: authorizedChannels 
+                });
+                logger.info(`Socket ${socket.id} unsubscribed from: ${authorizedChannels.join(', ')}`);
+            } else {
+                // Tek kanaldan ayrıl
+                socket.leave(channel);
+                socket.emit('unsubscribed', { 
+                    channel: channel,
+                    unsubscribedChannels: [channel] 
+                });
+                logger.info(`Socket ${socket.id} unsubscribed from: ${channel}`);
+            }
         } catch (error) {
             logger.error('Unsubscribe error:', error);
             socket.emit('error', { message: 'Failed to unsubscribe from channel' });
