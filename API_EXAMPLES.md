@@ -193,6 +193,103 @@ channelManager.subscribe('db.users', (data) => {
 
 ## 📤 Event Gönderme
 
+### Harici Sistemlerden Admin JWT ile Event Gönderme
+
+#### CodeIgniter Örneği
+```php
+<?php
+// JWT token oluşturma (admin yetkili)
+$payload = [
+    'sub' => 'codeigniter_system',
+    'name' => 'CodeIgniter App',
+    'admin' => true,
+    'iat' => time(),
+    'exp' => time() + 3600 // 1 saat
+];
+
+$jwt = JWT::encode($payload, $secret_key, 'HS256');
+
+// Socket.io bağlantısı ve event gönderme
+$client = new SocketIOClient('http://localhost:3001', [
+    'auth' => ['token' => $jwt]
+]);
+
+$client->emit('dbChange', [
+    'timestamp' => date('c'),
+    'table' => 'users',
+    'action' => 'insert',
+    'record' => ['id' => 123, 'name' => 'John Doe']
+]);
+?>
+```
+
+#### Laravel Örneği
+```php
+<?php
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+
+// Admin JWT oluşturma
+$payload = [
+    'sub' => 'laravel_api',
+    'name' => 'Laravel Application',
+    'admin' => true,
+    'iat' => time(),
+    'exp' => time() + 3600
+];
+
+$jwt = JWT::encode($payload, config('app.jwt_secret'), 'HS256');
+
+// HTTP POST ile event gönderme
+$response = Http::withHeaders([
+    'Authorization' => 'Bearer ' . $jwt,
+    'Content-Type' => 'application/json'
+])->post('http://localhost:3001/api/dbchange', [
+    'timestamp' => now()->toISOString(),
+    'table' => 'products',
+    'action' => 'update',
+    'record' => ['id' => 456, 'price' => 99.99]
+]);
+?>
+```
+
+#### Node.js Mikroservis Örneği
+```javascript
+const jwt = require('jsonwebtoken');
+const io = require('socket.io-client');
+
+// Admin JWT oluşturma
+const adminToken = jwt.sign({
+    sub: 'microservice_orders',
+    name: 'Orders Microservice',
+    admin: true,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 3600
+}, process.env.JWT_SECRET);
+
+// Socket bağlantısı
+const socket = io('http://localhost:3001', {
+    auth: { token: adminToken }
+});
+
+socket.on('connect', () => {
+    console.log('Mikroservis bağlandı');
+    
+    // DB değişiklik eventi gönder
+    socket.emit('dbChange', {
+        timestamp: new Date().toISOString(),
+        table: 'orders',
+        action: 'insert',
+        record: {
+            id: 789,
+            user_id: 123,
+            total: 299.99,
+            status: 'pending'
+        }
+    });
+});
+```
+
 ### Basit Event Gönderme
 ```javascript
 // Yeni kullanıcı ekleme eventi

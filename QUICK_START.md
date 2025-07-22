@@ -124,17 +124,49 @@ socket.on('db.users', (data) => {
 
 ## 🔧 Hızlı Yapılandırma
 
-### JWT Token Oluşturma
+### 3. JWT Token Oluşturma
+
+#### Kullanıcı Token'ı (Socket Bağlantıları İçin)
 ```javascript
 const jwt = require('jsonwebtoken');
 
-const token = jwt.sign({
+const userToken = jwt.sign({
     sub: 'user_id',
     name: 'User Name',
     tables: 'users,products,orders',
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 saat
 }, 'your-secret-key');
+```
+
+#### Admin Token'ı (Harici Sistemler İçin)
+```javascript
+const jwt = require('jsonwebtoken');
+
+// Harici sistemlerden DB değişiklik istekleri için
+const adminToken = jwt.sign({
+    sub: 'external_system_id',
+    name: 'External System Name',
+    admin: true,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 saat
+}, 'your-secret-key');
+
+// Kullanım örneği
+const io = require('socket.io-client');
+const socket = io('http://localhost:3001', {
+    auth: { token: adminToken }
+});
+
+socket.on('connect', () => {
+    // DB değişiklik eventi gönder
+    socket.emit('dbChange', {
+        timestamp: new Date().toISOString(),
+        table: 'users',
+        action: 'insert',
+        record: { id: 123, name: 'John Doe' }
+    });
+});
 ```
 
 ### Hızlı Test Scripti

@@ -386,6 +386,8 @@ socket.on('error', (error) => {
 
 ### JWT Token Yapısı
 
+#### 1. Kullanıcı JWT Token'ı (Socket Bağlantıları)
+
 ```json
 {
   "sub": "user_id",           // Kullanıcı ID'si
@@ -402,6 +404,26 @@ socket.on('error', (error) => {
 - `tables`: Kullanıcının erişebileceği tablo listesi
 - `iat`: Token'ın oluşturulma zamanı (Unix timestamp)
 - `exp`: Token'ın geçerlilik süresi (Unix timestamp)
+
+#### 2. Admin JWT Token'ı (Harici Sistemler)
+
+Harici sistemlerden DB değişiklik istekleri için:
+
+```json
+{
+  "sub": "admin_id",          // Admin sistem ID'si
+  "name": "Admin Name",       // Admin sistem adı
+  "admin": true,              // Admin yetkisi
+  "iat": 1753215601,          // Token oluşturulma zamanı
+  "exp": 1753219201           // Token son kullanma zamanı
+}
+```
+
+**Kullanım Senaryoları:**
+- CodeIgniter uygulamasından DB değişiklik bildirimi
+- Laravel API'sinden real-time güncelleme
+- Node.js mikroservislerinden event gönderimi
+- Diğer backend sistemlerden veri senkronizasyonu
 
 ### Güvenlik Önlemleri
 

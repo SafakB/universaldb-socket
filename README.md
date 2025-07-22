@@ -156,6 +156,11 @@ socket.emit('subscribe', 'db.products.*.456');
 ## 🔐 Güvenlik ve Authentication
 
 ### JWT Token Yapısı
+
+#### 1. Kullanıcı JWT Token'ı (Socket Bağlantıları İçin)
+
+Socket.io bağlantıları için kullanılan JWT token yapısı:
+
 ```json
 {
   "sub": "user_id",
@@ -173,8 +178,30 @@ socket.emit('subscribe', 'db.products.*.456');
 - `iat`: Token oluşturma zamanı (Unix timestamp)
 - `exp`: Token son kullanma zamanı (Unix timestamp)
 
+#### 2. Admin JWT Token'ı (Harici Sistemler İçin)
+
+Harici sistemlerden (CodeIgniter, Laravel, Node.js vb.) DB değişiklik istekleri için kullanılan admin JWT token yapısı:
+
+```json
+{
+  "sub": "admin_id",
+  "name": "Admin Name",
+  "admin": true,
+  "iat": 1753215601,
+  "exp": 1753219201
+}
+```
+
+**Token Alanları:**
+- `sub`: Admin sistemin benzersiz kimliği (string)
+- `name`: Admin sistemin görünen adı (string)
+- `admin`: Admin yetkisi (her zaman true)
+- `iat`: Token oluşturma zamanı (Unix timestamp)
+- `exp`: Token son kullanma zamanı (Unix timestamp)
+
 **Yetkilendirme Sistemi:**
-- Kullanıcılar sadece `tables` alanında belirtilen tablolara erişebilir
+- **Kullanıcı JWT:** Sadece `tables` alanında belirtilen tablolara erişim
+- **Admin JWT:** Tüm tablolara tam erişim, rate limiter'a takılmaz
 - Boş `tables` alanı hiçbir tabloya erişim vermez
 
 ### Bağlantı Örneği
