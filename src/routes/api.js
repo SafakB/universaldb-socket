@@ -11,5 +11,6 @@ router.get('/status', ApiController.getStatus);
 router.use(AuthMiddleware.httpAuth);
 router.post('/events', ApiController.publishEvent);
 router.get('/metrics', ApiController.getMetrics);
+router.get('/socket-stats', ApiController.getSocketStats);
 
 module.exports = router;
