@@ -129,14 +129,12 @@ socket.on('db.users', (data) => {
 const jwt = require('jsonwebtoken');
 
 const token = jwt.sign({
-    sub: 'user123',
-    name: 'Test User',
-    tables: 'users,products,orders'
-}, 'your-secret-key', {
-    expiresIn: '24h'
-});
-
-console.log('Token:', token);
+    sub: 'user_id',
+    name: 'User Name',
+    tables: 'users,products,orders',
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 saat
+}, 'your-secret-key');
 ```
 
 ### Hızlı Test Scripti

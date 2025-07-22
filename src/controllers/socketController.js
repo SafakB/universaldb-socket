@@ -18,8 +18,8 @@ class SocketController {
     static handleDbChange(io, socket, data) {
         try {
             const userId = socket.user?.sub || 'anonymous';
-            // Rate limiting check
-            if (!rateLimiter.check(userId, 5) && socket.user.admin === false) {
+            // Rate limiting check (admin users bypass rate limiting)
+            if (!socket.user.admin && !rateLimiter.check(userId, 5)) {
                 socket.emit('error', { message: 'Rate limit exceeded for dbChange events' });
                 return;
             }

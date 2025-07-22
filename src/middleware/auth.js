@@ -14,6 +14,7 @@ class AuthMiddleware {
             const decoded = jwt.verify(token, jwtConfig.secret);
             socket.user = decoded;
             socket.tables = decoded.tables ? decoded.tables.split(',') : [];
+            socket.user.admin = decoded.admin || false;
             
             logger.info(`User authenticated: ${decoded.sub}`);
             next();

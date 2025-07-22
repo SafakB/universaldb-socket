@@ -280,7 +280,7 @@ class AuthMiddleware {
         const token = socket.handshake.auth?.token;
         const decoded = jwt.verify(token, jwtConfig.secret);
         socket.user = decoded;
-        socket.tables = decoded.tables.split(',');
+        socket.tables = decoded.tables ? decoded.tables.split(',') : [];
     }
 }
 ```
@@ -388,19 +388,20 @@ socket.on('error', (error) => {
 
 ```json
 {
-  "sub": "user_id",
-  "name": "User Name",
-  "tables": "users,products,orders",
-  "iat": 1642248000,
-  "exp": 1642251600
+  "sub": "user_id",           // Kullanıcı ID'si
+  "name": "User Name",        // Kullanıcı adı
+  "tables": "table1,table2",  // Erişilebilir tablolar (virgülle ayrılmış)
+  "iat": 1640995200,           // Token oluşturulma zamanı
+  "exp": 1640998800            // Token son kullanma zamanı
 }
 ```
 
-**Önemli Alanlar:**
-- `sub`: Kullanıcı ID'si
-- `tables`: Yetkili tablolar (virgülle ayrılmış)
-- `iat`: Token oluşturma zamanı
-- `exp`: Token son kullanma zamanı
+**Alanların Açıklamaları:**
+- `sub`: Kullanıcının benzersiz kimliği
+- `name`: Kullanıcının görünen adı
+- `tables`: Kullanıcının erişebileceği tablo listesi
+- `iat`: Token'ın oluşturulma zamanı (Unix timestamp)
+- `exp`: Token'ın geçerlilik süresi (Unix timestamp)
 
 ### Güvenlik Önlemleri
 

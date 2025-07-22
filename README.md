@@ -161,10 +161,21 @@ socket.emit('subscribe', 'db.products.*.456');
   "sub": "user_id",
   "name": "User Name",
   "tables": "users,products,orders",
-  "iat": 1642248000,
-  "exp": 1642251600
+  "iat": 1753215601,
+  "exp": 1753219201
 }
 ```
+
+**Token Alanları:**
+- `sub`: Kullanıcı ID'si (string)
+- `name`: Kullanıcı adı (string)
+- `tables`: Erişilebilir tablolar (virgülle ayrılmış string)
+- `iat`: Token oluşturma zamanı (Unix timestamp)
+- `exp`: Token son kullanma zamanı (Unix timestamp)
+
+**Yetkilendirme Sistemi:**
+- Kullanıcılar sadece `tables` alanında belirtilen tablolara erişebilir
+- Boş `tables` alanı hiçbir tabloya erişim vermez
 
 ### Bağlantı Örneği
 ```javascript
