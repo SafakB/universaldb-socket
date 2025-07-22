@@ -21,6 +21,14 @@ class ApiController {
 
     static publishEvent(req, res) {
         try {
+            // Check if user has admin privileges
+            if (!req.user || !req.user.admin) {
+                return res.status(403).json({ 
+                    error: 'Forbidden', 
+                    message: 'Admin privileges required to publish events' 
+                });
+            }
+
             const eventData = req.body;
             const io = req.app.get('io');
 
