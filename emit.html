@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>dbChange Emit & Dinleme</title>
+    <style>
+        .json-pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Fira Mono', 'Consolas', 'Monaco', monospace;
+            color: #212529;
+        }
+
+        .json-key {
+            color: #0d6efd;
+        }
+
+        .json-string {
+            color: #198754;
+        }
+
+        .json-number {
+            color: #fd7e14;
+        }
+
+        .json-boolean {
+            color: #d63384;
+        }
+
+        .json-null {
+            color: #6c757d;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Emit Alanı -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">dbChange Emit Formu</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="emitForm">
+                            <div class="mb-3">
+                                <label for="table" class="form-label">Tablo Adı</label>
+                                <select class="form-select" id="table" required>
+                                    <option value="pages">pages</option>
+                                    <option value="categories">categories</option>
+                                    <option value="users">users</option>
+                                    <option value="products">products</option>
+                                    <option value="orders">orders</option>
+                                    <option value="comments">comments</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="action" class="form-label">İşlem (insert, update, delete)</label>
+                                <select class="form-select" id="action" required>
+                                    <option value="insert">insert</option>
+                                    <option value="update">update</option>
+                                    <option value="delete">delete</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="record" class="form-label">Record (JSON)</label>
+                                <textarea class="form-control" id="record" required>{"id":12,"title":"Test"}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Emit Gönder</button>
+                        </form>
+                        <div id="result" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Dinleme Alanı -->
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h4 class="mb-0">Kanal Dinleme</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="listenForm">
+                            <div class="mb-3">
+                                <label for="channel" class="form-label">Kanal Adı</label>
+                                <input type="text" class="form-control" id="channel" placeholder="db.pages.update.12"
+                                    required />
+                            </div>
+                            <button type="submit" class="btn btn-info w-100">Dinlemeye Başla</button>
+                        </form>
+                        <div id="listenResult" class="mt-3"></div>
+                        <ul id="messages" class="list-group mt-3"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Emit için ayrı socket
+        // JWT token örneği (gerçek uygulamada sunucudan alınmalı)
+        const JWT_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyIiwibmFtZSI6IlRlc3QiLCJ0YWJsZXMiOiJwYWdlcyxjYXRlZ29yaWVzIiwiaWF0IjoxNzg0MTM2ODc3LCJleHAiOjE3ODQxNDA0Nzd9.i0f-ndnuS85Ag4V_KE9qbhhySyC7M42VH0DOR2y-h2k';
+        const emitSocket = io('http://localhost:3000', {
+            auth: { token: JWT_TOKEN }
+        });
+        document.getElementById('emitForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const table = document.getElementById('table').value;
+            const action = document.getElementById('action').value;
+            let record;
+            try {
+                record = JSON.parse(document.getElementById('record').value);
+            } catch (err) {
+                document.getElementById('result').textContent = 'Record alanı geçerli bir JSON olmalı!';
+                return;
+            }
+            const data = {
+                timestamp: new Date().toISOString(),
+                table,
+                action,
+                record
+            };
+            emitSocket.emit('dbChange', data);
+            document.getElementById('result').textContent = 'Emit gönderildi!';
+        });
+
+        // Dinleme için ayrı socket
+        const listenSocket = io('http://localhost:3000', {
+            auth: { token: JWT_TOKEN }
+        });
+        let currentChannel = null;
+        document.getElementById('listenForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const channel = document.getElementById('channel').value.trim();
+            if (!channel) return;
+            // Önce eski dinlemeyi kaldır
+            if (currentChannel) {
+                listenSocket.off(currentChannel);
+                document.getElementById('messages').innerHTML = '';
+            }
+            currentChannel = channel;
+            // Sunucuya subscribe isteği gönder, odaya katıl
+            listenSocket.emit('subscribe', channel, (joinedChannels) => {
+                // Dinleme kanalını ayarlamak
+                if (currentChannel) {
+                    listenSocket.off(currentChannel);
+                    document.getElementById('messages').innerHTML = '';
+                }
+
+                // joinedChannels örneğin: ['db.pages.insert', 'db.categories.insert']
+                joinedChannels.forEach(ch => {
+                    listenSocket.on(ch, function (data) {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        const pre = document.createElement('pre');
+                        pre.className = 'json-pre';
+                        pre.innerHTML = syntaxHighlight(JSON.stringify(data, null, 2));
+                        li.appendChild(pre);
+                        const messages = document.getElementById('messages');
+                        messages.insertBefore(li, messages.firstChild);
+                    });
+                });
+
+                currentChannel = channel;
+                document.getElementById('listenResult').textContent = `Dinleniyor: ${joinedChannels.join(', ')}`;
+            });
+        });
+    </script>
+    <script>
+        // Basit JSON syntax highlight fonksiyonu
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^".*"$/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+    </script>
+</body>
+
+</html>
