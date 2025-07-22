@@ -19,18 +19,72 @@ MySQL veritabanı değişikliklerini gerçek zamanlı olarak istemcilere ileten,
 
 ## ⚡ Hızlı Başlangıç
 
-### 1. Bağımlılıkları Yükleyin
+### 1. Projeyi Klonlayın
+```bash
+git clone <repository-url>
+cd mysql-socket
+```
+
+### 2. Bağımlılıkları Yükleyin
 ```bash
 npm install
 ```
 
-### 2. Sunucuyu Başlatın
+### 3. Ortam Değişkenlerini Yapılandırın
 ```bash
-node server.js
+cp .env.example .env
+# .env dosyasını kendi yapılandırmanızla düzenleyin
 ```
 
-### 3. Web Arayüzünü Açın
+### 4. Sunucuyu Başlatın
+```bash
+# Geliştirme modu (otomatik yeniden başlatma)
+npm run dev
+
+# Üretim modu
+npm start
+```
+
+### 5. Web Arayüzünü Açın
 `emit.html` dosyasını tarayıcınızda açın veya: http://localhost:3000/emit.html
+
+
+## 📁 Proje Yapısı
+
+```
+mysql-socket/
+├── src/
+│   ├── app.js                    # Ana uygulama sınıfı
+│   ├── config/
+│   │   ├── server.js             # Sunucu yapılandırması
+│   │   └── jwt.js                # JWT yapılandırması
+│   ├── controllers/
+│   │   ├── socketController.js   # Socket.io kontrolcüsü
+│   │   └── apiController.js      # REST API kontrolcüsü
+│   ├── middleware/
+│   │   ├── auth.js               # Kimlik doğrulama middleware
+│   │   ├── rateLimiter.js        # Hız sınırlama middleware
+│   │   └── errorHandler.js       # Hata yönetimi middleware
+│   ├── services/
+│   │   ├── eventService.js       # Event yayınlama servisi
+│   │   └── socketService.js      # Socket yönetim servisi
+│   ├── utils/
+│   │   ├── logger.js             # Loglama yardımcısı
+│   │   └── validator.js          # Veri doğrulama yardımcısı
+│   └── routes/
+│       └── api.js                # API rotaları
+├── public/
+│   ├── index.html                # Ana web arayüzü
+│   ├── css/
+│   │   └── style.css             # CSS stilleri
+│   └── js/
+│       └── client.js             # İstemci JavaScript kütüphanesi
+├── server.js                     # Ana giriş noktası
+├── package.json                  # Proje bağımlılıkları
+├── .env.example                  # Ortam değişkenleri örneği
+├── .gitignore                    # Git ignore dosyası
+└── README.md                     # Bu dosya
+```
 
 
 ## 🔧 Kurulum ve Yapılandırma
@@ -267,4 +321,4 @@ MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 ---
 
 **Geliştirici:** Şafak Bahçe
-**Versiyon:** 0.0.1  
+**Versiyon:** 0.0.1
