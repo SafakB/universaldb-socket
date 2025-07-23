@@ -151,9 +151,14 @@
             // Önceki dinleyicileri temizle
             if (currentAuthorizedChannels) {
                 currentAuthorizedChannels.forEach(ch => {
-                    // Her yetkili kanaldan unsubscribe ol
-                    listenSocket.emit('unsubscribe', { channel: ch });
-                    listenSocket.off(ch);
+                    // Sadece currentChannel'dan farklı kanallardan unsubscribe ol
+                    if (ch !== currentChannel) {
+                        listenSocket.emit('unsubscribe', { channel: ch });
+                        listenSocket.off(ch);
+                    } else {
+                        // currentChannel ile aynı ise sadece listener'ı kaldır
+                        listenSocket.off(ch);
+                    }
                 });
                 document.getElementById('messages').innerHTML = '';
             }
