@@ -182,7 +182,7 @@ JWT token structure used for Socket.io connections:
 - `iat`: Token creation time (Unix timestamp)
 - `exp`: Token expiration time (Unix timestamp)
 
-#### 2. Admin JWT Token (For External Systems)
+#### 2. Admin or Publisher JWT Token (For External Systems)
 
 Admin or Publisher JWT token structure used for DB change requests from external systems (CodeIgniter, Laravel, Node.js etc.):
 
