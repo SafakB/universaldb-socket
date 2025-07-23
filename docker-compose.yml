@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0
-    container_name: mysql-socket-db
+    image: mariadb:10.6
+    container_name: mariadb-socket-db
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: socketdb
-      MYSQL_USER: socketuser
-      MYSQL_PASSWORD: socketpass
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: socketdb
+      MARIADB_USER: socketuser
+      MARIADB_PASSWORD: socketpass
     ports:
       - "3306:3306"
     volumes:
@@ -23,6 +23,7 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=production
+      - PORT=3001
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_USER=socketuser
