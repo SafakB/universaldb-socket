@@ -193,7 +193,7 @@ channelManager.subscribe('db.users', (data) => {
 
 ## 📤 Event Sending
 
-### Sending Events from External Systems with Admin JWT
+### Sending Events from External Systems with Admin or Publisher JWT
 
 #### CodeIgniter Example
 ```php
@@ -203,6 +203,7 @@ $payload = [
     'sub' => 'codeigniter_system',
     'name' => 'CodeIgniter App',
     'admin' => true,
+    'publisher' => false,
     'iat' => time(),
     'exp' => time() + 3600 // 1 hour
 ];
@@ -229,11 +230,12 @@ $client->emit('dbChange', [
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-// Admin JWT creation
+// Authorized User JWT creation
 $payload = [
     'sub' => 'laravel_api',
     'name' => 'Laravel Application',
     'admin' => true,
+    'publisher' => false,
     'iat' => time(),
     'exp' => time() + 3600
 ];
@@ -258,18 +260,19 @@ $response = Http::withHeaders([
 const jwt = require('jsonwebtoken');
 const io = require('socket.io-client');
 
-// Admin JWT creation
-const adminToken = jwt.sign({
+// Authorized User JWT creation
+const authorizedUser = jwt.sign({
     sub: 'microservice_orders',
     name: 'Orders Microservice',
     admin: true,
+    publisher: false,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 3600
 }, process.env.JWT_SECRET);
 
 // Socket connection
 const socket = io('http://localhost:3001', {
-    auth: { token: adminToken }
+    auth: { token: authorizedUser }
 });
 
 socket.on('connect', () => {

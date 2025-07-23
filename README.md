@@ -184,13 +184,14 @@ JWT token structure used for Socket.io connections:
 
 #### 2. Admin JWT Token (For External Systems)
 
-Admin JWT token structure used for DB change requests from external systems (CodeIgniter, Laravel, Node.js etc.):
+Admin or Publisher JWT token structure used for DB change requests from external systems (CodeIgniter, Laravel, Node.js etc.):
 
 ```json
 {
   "sub": "admin_id",
   "name": "Admin Name",
   "admin": true,
+  "publisher": false,
   "iat": 1753215601,
   "exp": 1753219201
 }
@@ -199,13 +200,15 @@ Admin JWT token structure used for DB change requests from external systems (Cod
 **Token Fields:**
 - `sub`: Unique identifier of admin system (string)
 - `name`: Display name of admin system (string)
-- `admin`: Admin privilege (always true)
+- `admin`: Admin privilege (boolen)
+- `publisher`: Publisher privilege (boolen)
 - `iat`: Token creation time (Unix timestamp)
 - `exp`: Token expiration time (Unix timestamp)
 
 **Authorization System:**
 - **User JWT:** Access only to tables specified in `tables` field
 - **Admin JWT:** Full access to all tables, bypasses rate limiter
+- **Publisher JWT:** Access to publish events with rate limiter, but not to subscribe to channels
 - Empty `tables` field grants no table access
 
 ### Connection Example

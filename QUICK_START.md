@@ -78,7 +78,7 @@ socket.on('db.users.*.123', (data) => {
 });
 ```
 
-### Example 4: Sending Events (need admin required access)
+### Example 4: Sending Events (need admin or publisher required access)
 ```javascript
 // Notify database change
 socket.emit('dbChange', {
@@ -94,7 +94,7 @@ socket.emit('dbChange', {
 ```
 
 
-### Example 5: Sending Events with API (need admin required access)
+### Example 5: Sending Events with API (need admin or publisher required access)
 ```javascript
 // Notify database change
 fetch('http://localhost:3001/api/events', {
@@ -174,15 +174,16 @@ const userToken = jwt.sign({
 }, 'your-secret-key');
 ```
 
-#### Admin Token (For External Systems)
+#### Admin or Publisher Token (For External Systems)
 ```javascript
 const jwt = require('jsonwebtoken');
 
 // For DB change requests from external systems
-const adminToken = jwt.sign({
+const authorizedToken = jwt.sign({
     sub: 'external_system_id',
     name: 'External System Name',
     admin: true,
+    publisher: false,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour
 }, 'your-secret-key');
@@ -190,7 +191,7 @@ const adminToken = jwt.sign({
 // Usage example
 const io = require('socket.io-client');
 const socket = io('http://localhost:3001', {
-    auth: { token: adminToken }
+    auth: { token: authorizedToken }
 });
 
 socket.on('connect', () => {

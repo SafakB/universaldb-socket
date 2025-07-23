@@ -408,15 +408,16 @@ socket.on('error', (error) => {
 - `iat`: Token creation time (Unix timestamp)
 - `exp`: Token expiration time (Unix timestamp)
 
-#### 2. Admin JWT Token (External Systems)
+#### 2. Admin or Publisher JWT Token (External Systems)
 
 For DB change requests from external systems:
 
 ```json
 {
-  "sub": "admin_id",          // Admin system ID
-  "name": "Admin Name",       // Admin system name
+  "sub": "user_id",           // Admin system ID
+  "name": "User Name",        // Admin system name
   "admin": true,              // Admin privilege
+  "publisher": false,         // Publisher privilege
   "iat": 1753215601,          // Token creation time
   "exp": 1753219201           // Token expiration time
 }

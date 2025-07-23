@@ -21,11 +21,11 @@ class ApiController {
 
     static publishEvent(req, res) {
         try {
-            // Check if user has admin privileges
-            if (!req.user || !req.user.admin) {
+            // Check if user has admin or publisher privileges
+            if (!req.user || (!req.user.admin && !req.user.publisher)) {
                 return res.status(403).json({
                     error: 'Forbidden',
-                    message: 'Admin privileges required to publish events'
+                    message: 'Publisher privileges required to publish events'
                 });
             }
 

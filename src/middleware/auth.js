@@ -6,7 +6,7 @@ class AuthMiddleware {
     static socketAuth(socket, next) {
         try {
             const token = socket.handshake.auth?.token;
-            
+
             if (!token) {
                 return next(new Error('Authentication token required'));
             }
@@ -15,7 +15,8 @@ class AuthMiddleware {
             socket.user = decoded;
             socket.tables = decoded.tables ? decoded.tables.split(',') : [];
             socket.user.admin = decoded.admin || false;
-            
+            socket.user.publisher = decoded.publisher || false;
+
             logger.info(`User authenticated: ${decoded.sub}`);
             next();
         } catch (error) {
@@ -27,7 +28,7 @@ class AuthMiddleware {
     static httpAuth(req, res, next) {
         try {
             const token = req.headers.authorization?.replace('Bearer ', '');
-            
+
             if (!token) {
                 return res.status(401).json({ error: 'Authentication token required' });
             }
