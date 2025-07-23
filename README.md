@@ -2,6 +2,8 @@
 
 A **Express.js** and **Socket.io** based event server that delivers MySQL database changes to clients in real-time. Provides secure and scalable real-time data transmission with JWT authentication and hierarchical channel structure.
 
+<img width="994" height="646" alt="image" src="https://github.com/user-attachments/assets/3be0886c-451a-44c3-9c2b-0338f4908510" />
+
 ## 🚀 Features
 
 - **🔐 JWT Authentication:** Token-based secure connection and authorization
