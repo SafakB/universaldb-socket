@@ -10,7 +10,13 @@
     "lint": "eslint src/",
     "format": "prettier --write src/"
   },
-  "keywords": ["mysql", "socket.io", "real-time", "events", "websocket"],
+  "keywords": [
+    "mysql",
+    "socket.io",
+    "real-time",
+    "events",
+    "websocket"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {

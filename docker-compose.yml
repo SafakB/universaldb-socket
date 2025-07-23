@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-socket-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: socketdb
+      MYSQL_USER: socketuser
+      MYSQL_PASSWORD: socketpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - socket-network
+
+  app:
+    build: .
+    container_name: universaldb-socket-app
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=socketuser
+      - DB_PASSWORD=socketpass
+      - DB_NAME=socketdb
+      - JWT_SECRET=your-jwt-secret-key
+    depends_on:
+      - mysql
+    networks:
+      - socket-network
+    volumes:
+      - ./public:/app/public
+
+volumes:
+  mysql_data:
+
+networks:
+  socket-network:
+    driver: bridge
