@@ -6,8 +6,8 @@ WORKDIR /app
 # Package dosyalarını kopyala
 COPY package*.json ./
 
-# Bağımlılıkları yükle
-RUN npm ci --only=production
+# package-lock.json varsa npm ci, yoksa npm install kullan
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi
 
 # Uygulama kodunu kopyala
 COPY . .
