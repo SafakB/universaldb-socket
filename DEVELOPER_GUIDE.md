@@ -185,7 +185,7 @@ universaldb-socket/
 ├── server.js                     # Application entry point
 ├── package.json                  # Project metadata
 ├── .env.example                  # Environment variables template
-├── emit.html                     # Test interface
+
 └── README.md                     # Project documentation
 ```
 
