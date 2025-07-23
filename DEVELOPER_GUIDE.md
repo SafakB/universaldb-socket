@@ -103,7 +103,7 @@ db (root)
 #### 1. Download Project
 ```bash
 git clone <repository-url>
-cd mysql-socket
+cd universaldb-socket
 ```
 
 #### 2. Install Dependencies
@@ -121,7 +121,7 @@ cp .env.example .env
 Edit `.env` file:
 ```env
 # Server Configuration
-PORT=3000
+PORT=3001
 NODE_ENV=development
 
 # JWT Configuration (IMPORTANT: Change in production!)
@@ -133,7 +133,7 @@ RATE_LIMIT_WINDOW_MS=60000
 RATE_LIMIT_MAX_REQUESTS=100
 
 # CORS Configuration
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:3001
 ```
 
 #### 4. Start Server
@@ -146,15 +146,17 @@ npm start
 ```
 
 #### 5. Test
-- Open `http://localhost:3000` in browser
-- Use `emit.html` file for testing
+- Open `http://localhost:3001` in browser
+- Use `http://localhost:3001/index.html` file for testing
+- Visit `http://localhost:3001/monitor.html` for monitoring
+
 
 ---
 
 ## 📁 Project Structure
 
 ```
-mysql-socket/
+universaldb-socket/
 ├── src/                          # Main source code
 │   ├── app.js                    # Main application class
 │   ├── config/                   # Configuration files
@@ -177,6 +179,7 @@ mysql-socket/
 │       └── api.js                # REST endpoints
 ├── public/                       # Static files
 │   ├── index.html                # Main page
+│   ├── monitor.html              # Monitoring page
 │   ├── css/
 │   └── js/
 ├── server.js                     # Application entry point
@@ -438,7 +441,7 @@ export JWT_SECRET="$(openssl rand -base64 32)"
 // config/server.js
 socketio: {
     cors: {
-        origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+        origin: process.env.CORS_ORIGIN || 'http://localhost:3001',
         methods: ['GET', 'POST'],
         credentials: true
     }
@@ -595,7 +598,7 @@ const io = require('socket.io-client');
 
 describe('Socket Integration', () => {
     test('should authenticate with valid token', (done) => {
-        const socket = io('http://localhost:3000', {
+        const socket = io('http://localhost:3001', {
             auth: { token: validToken }
         });
         socket.on('connect', done);
@@ -635,14 +638,14 @@ socket.onAny((event, ...args) => console.log(event, args));
 ### Testing Tools
 
 #### 1. Using Emit.html
-- Open `http://localhost:3000/emit.html`
+- Open `http://localhost:3001/index.html`
 - Update JWT token
 - Perform event sending and listening tests
 
 #### 2. Postman/Insomnia
 ```javascript
 // WebSocket connection test
-const socket = new WebSocket('ws://localhost:3000/socket.io/?EIO=4&transport=websocket');
+const socket = new WebSocket('ws://localhost:3001/socket.io/?EIO=4&transport=websocket');
 ```
 
 #### 3. Node.js Test Script
@@ -650,7 +653,7 @@ const socket = new WebSocket('ws://localhost:3000/socket.io/?EIO=4&transport=web
 // test-client.js
 const io = require('socket.io-client');
 
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:3001', {
     auth: { token: 'your-jwt-token' }
 });
 
@@ -670,7 +673,7 @@ socket.on('connect', () => {
 ```bash
 # .env.production
 NODE_ENV=production
-PORT=3000
+PORT=3001
 JWT_SECRET=your-super-secure-production-secret
 CORS_ORIGIN=https://yourdomain.com
 LOG_LEVEL=warn
@@ -681,7 +684,7 @@ LOG_LEVEL=warn
 // ecosystem.config.js
 module.exports = {
     apps: [{
-        name: 'mysql-socket-server',
+        name: 'universaldb-socket-server',
         script: 'server.js',
         instances: 'max',
         exec_mode: 'cluster',
@@ -690,7 +693,7 @@ module.exports = {
         },
         env_production: {
             NODE_ENV: 'production',
-            PORT: 3000
+            PORT: 3001
         }
     }]
 };
@@ -708,7 +711,7 @@ RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3001
 
 USER node
 
@@ -719,10 +722,10 @@ CMD ["node", "server.js"]
 # docker-compose.yml
 version: '3.8'
 services:
-  mysql-socket:
+  universaldb-socket:
     build: .
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}

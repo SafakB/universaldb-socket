@@ -19,7 +19,7 @@
 const io = require('socket.io-client');
 
 // Basic connection
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:3001', {
     auth: {
         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
     },
@@ -51,7 +51,7 @@ socket.on('connect_error', (error) => {
 </head>
 <body>
     <script>
-        const socket = io('http://localhost:3000', {
+        const socket = io('http://localhost:3001', {
             auth: {
                 token: localStorage.getItem('jwt_token')
             }
@@ -83,7 +83,7 @@ def disconnect():
     print('Connection lost')
 
 # Connect with JWT token
-sio.connect('http://localhost:3000', 
+sio.connect('http://localhost:3001', 
            auth={'token': 'your-jwt-token'})
 ```
 
@@ -630,7 +630,7 @@ class SocketPool {
 }
 
 // Usage
-const socketPool = new SocketPool('http://localhost:3000');
+const socketPool = new SocketPool('http://localhost:3001');
 const userSocket = socketPool.getConnection('user123');
 
 // Periodic cleanup
@@ -773,7 +773,7 @@ const metrics = new SocketMetrics(socket);
 // Periodic reporting
 setInterval(() => {
     console.log('Socket Metrics:', metrics.getMetrics());
-}, 30000);
+}, 30010);
 ```
 
 ---
@@ -836,7 +836,7 @@ export function useSocket(url, token) {
 // Usage
 function UserComponent() {
     const { subscribe, emit, connected } = useSocket(
-        'http://localhost:3000',
+        'http://localhost:3001',
         localStorage.getItem('jwt')
     );
     
@@ -1049,7 +1049,7 @@ class ConnectionManager {
 }
 
 // ❌ Bad
-const socket = io('http://localhost:3000'); // No token, no error handling
+const socket = io('http://localhost:3001'); // No token, no error handling
 ```
 
 ### 2. Event Handling
@@ -1157,7 +1157,7 @@ class SocketManager {
 
 // ❌ Bad
 const sockets = []; // Memory leak risk
-sockets.push(io('http://localhost:3000'));
+sockets.push(io('http://localhost:3001'));
 // No cleanup
 ```
 

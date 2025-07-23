@@ -22,7 +22,7 @@ A **Express.js** and **Socket.io** based event server that delivers MySQL databa
 ### 1. Clone the Project
 ```bash
 git clone <repository-url>
-cd mysql-socket
+cd universaldb-socket
 ```
 
 ### 2. Install Dependencies
@@ -45,14 +45,17 @@ npm run dev
 npm start
 ```
 
-### 5. Open the Web Interface
-Open the `emit.html` file in your browser or visit: http://localhost:3000/emit.html
+### 5. Open the Web Playground
+Visit link in your browser: http://localhost:3001/
+
+### 6. Open the Monitoring Sockets and Rooms
+Visit link in your browser: http://localhost:3001/monitor.html
 
 
 ## 📁 Project Structure
 
 ```
-mysql-socket/
+universaldb-socket/
 ├── src/
 │   ├── app.js                    # Main application class
 │   ├── config/
@@ -75,6 +78,7 @@ mysql-socket/
 │       └── api.js                # API routes
 ├── public/
 │   ├── index.html                # Main web interface
+│   ├── monitor.html              # Monitoring web interface
 │   ├── css/
 │   │   └── style.css             # CSS styles
 │   └── js/
@@ -226,18 +230,19 @@ const socket = io('http://localhost:3001', {
 
 ## 🌐 API Endpoints
 
-### POST /api/emit
+### POST /api/events
 Event sending endpoint
 
 **Request Body:**
 ```json
 {
-  "channel": "db.users.insert",
-  "data": {
-    "id": 123,
-    "name": "John Doe",
-    "email": "john@example.com"
-  }
+    "timestamp":"2024-01-15T10:30:00.000Z",
+    "action":"update",
+    "table":"pages",
+    "record":{
+      "id":12,
+      "title":"Test"
+    }
 }
 ```
 
@@ -250,10 +255,10 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "success": true,
-  "message": "Event emitted successfully",
-  "channel": "db.users.insert",
-  "timestamp": "2024-01-15T10:30:00.000Z"
+    "success": true,
+    "message": "Event published successfully",
+    "eventsPublished": 6,
+    "timestamp": "2025-07-23T09:03:45.261Z"
 }
 ```
 ```
@@ -339,8 +344,8 @@ socket.on('db.users.update', (data) => {
 const changeData = {
   table: 'users',
   action: 'update',
-  id: 123,
   data: {
+    id: 123,
     name: 'John Updated',
     email: 'john.updated@example.com'
   },
@@ -351,16 +356,13 @@ const changeData = {
 socket.emit('dbChange', changeData);
 
 // Send via HTTP API
-fetch('http://localhost:3001/api/emit', {
+fetch('http://localhost:3001/api/events', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${jwtToken}`
   },
-  body: JSON.stringify({
-    channel: 'db.users.update.123',
-    data: changeData
-  })
+  body: JSON.stringify(changeData)
 });
 ```
 
@@ -431,7 +433,7 @@ module.exports = {
 
 ### Environment Variables
 ```bash
-PORT=3000
+PORT=3001
 JWT_SECRET=your-production-secret-key
 NODE_ENV=production
 ```
@@ -439,7 +441,7 @@ NODE_ENV=production
 ### Running with PM2
 ```bash
 npm install -g pm2
-pm2 start server.js --name mysql-socket-server
+pm2 start server.js --name universaldb-socket-server
 ```
 
 ### Docker Support
@@ -449,7 +451,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 COPY . .
-EXPOSE 3000
+EXPOSE 3001
 CMD ["node", "server.js"]
 ```
 
@@ -509,7 +511,8 @@ MIT License - See the [LICENSE](LICENSE) file for details.
 - **[API Examples](API_EXAMPLES.md)** - Detailed usage examples and best practices
 
 ### Important Files
-- `emit.html` - Test interface and example usage
+- `http://localhost:3001/index.html` - Test interface and example usage (public/index.html)
+- `http://localhost:3001/monitor.html` - Monitor interface and example usage (public/monitor.html)
 - `.env.example` - Environment variables template
 - `src/` - Main source code
 

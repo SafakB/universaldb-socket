@@ -17,7 +17,7 @@ npm run dev
 ### 2. Test (3 minutes)
 ```bash
 # Open in browser
-http://localhost:3000/emit.html
+http://localhost:3001/index.html
 ```
 
 **Test Scenario:**
@@ -26,6 +26,17 @@ http://localhost:3000/emit.html
 3. Click "Send Emit" button
 4. Listen to "db.users" channel in right panel
 5. See the event arrive
+
+### 2. Monitoring
+```bash
+# Open in browser
+http://localhost:3001/monitor.html
+```
+**Feature:**
+1. See all connected sockets
+2. See all connected room via socket users
+3. See all rooms (need fix)
+4. See all emits (coming soon)
 
 ---
 
@@ -36,7 +47,7 @@ http://localhost:3000/emit.html
 const io = require('socket.io-client');
 
 // Connect
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:3001', {
     auth: {
         token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...'
     }
@@ -67,7 +78,7 @@ socket.on('db.users.*.123', (data) => {
 });
 ```
 
-### Example 4: Sending Events
+### Example 4: Sending Events (need admin required access)
 ```javascript
 // Notify database change
 socket.emit('dbChange', {
@@ -81,6 +92,30 @@ socket.emit('dbChange', {
     }
 });
 ```
+
+
+### Example 5: Sending Events with API (need admin required access)
+```javascript
+// Notify database change
+fetch('http://localhost:3001/api/events', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${adminToken}`
+    },
+    body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        table: 'products',
+        action: 'insert',
+        record: {
+            id: 456,
+            name: 'New Product',
+            price: 99.99
+        }
+    })
+});
+```
+
 
 ---
 
@@ -174,7 +209,7 @@ socket.on('connect', () => {
 // test.js
 const io = require('socket.io-client');
 
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:3001', {
     auth: { token: 'your-token-here' }
 });
 
@@ -242,7 +277,7 @@ function UserList() {
     const [users, setUsers] = useState([]);
     
     useEffect(() => {
-        const socket = io('http://localhost:3000', {
+        const socket = io('http://localhost:3001', {
             auth: { token: localStorage.getItem('jwt') }
         });
         
@@ -287,7 +322,7 @@ export default {
     };
   },
   mounted() {
-    this.socket = io('http://localhost:3000', {
+    this.socket = io('http://localhost:3001', {
       auth: { token: this.$store.state.jwt }
     });
     
@@ -329,7 +364,7 @@ export default {
     </div>
     
     <script>
-        const socket = io('http://localhost:3000', {
+        const socket = io('http://localhost:3001', {
             auth: { token: 'your-jwt-token' }
         });
         
@@ -361,8 +396,9 @@ export default {
 
 ## 🔗 Useful Links
 
-- **Test Interface**: http://localhost:3000/emit.html
-- **Health Check**: http://localhost:3000/api/health
+- **Test Interface**: http://localhost:3001/index.html
+- **Monitoring Interface**: http://localhost:3001/monitor.html
+- **Health Check**: http://localhost:3001/api/health
 - **Socket.io Admin UI**: https://admin.socket.io/
 - **JWT Debugger**: https://jwt.io/#debugger-io
 
