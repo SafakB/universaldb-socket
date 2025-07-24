@@ -92,6 +92,7 @@ class ApiController {
                     userId: socket.user?.sub || 'anonymous',
                     userName: socket.user?.name || 'Unknown',
                     isAdmin: socket.user?.admin || false,
+                    isPublisher: socket.user?.publisher || false,
                     authorizedTables: socket.tables || [],
                     connectedAt: socket.handshake.time,
                     connectedSince: new Date() - new Date(socket.handshake.time),
